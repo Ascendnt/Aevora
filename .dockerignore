@@ -4,3 +4,4 @@ writable/session/*
 writable/debugbar/*
 tests
 .git
+.env
