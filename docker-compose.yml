@@ -1,0 +1,43 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      CI_ENVIRONMENT: development
+      app.baseURL: "http://localhost:8080/"
+      app.indexPage: ""
+      database.default.hostname: db
+      database.default.database: hris
+      database.default.username: postgres
+      database.default.password: postgres
+      database.default.DBDriver: Postgre
+      database.default.port: "5432"
+      database.default.charset: utf8
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Live-edit the app code without rebuilding the image
+      - ./app:/app/app
+      - ./public:/app/public
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hris
+    ports:
+      # Exposed so you can inspect the DB with pgAdmin/psql from your desktop
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hris"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
