@@ -214,7 +214,7 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
         <span class="ln"><i>as <em>one</em>,</i></span>
         <span class="ln"><i>not one <span class="accent">chore</span>.</i></span>
       </h1>
-      <p class="hero-sub">Aevora brings your companies, branches, people, and payroll into one calm workspace — built for teams who'd rather grow than chase paperwork.</p>
+      <p class="hero-sub">Aevora brings your companies, branches, people, and payroll into one calm workspace built for teams who'd rather grow than chase paperwork.</p>
       <div class="hero-cta">
         <a href="<?= site_url('login') ?>" class="btn-primary" data-magnetic>
           Enter workspace
@@ -263,7 +263,7 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
       <span class="h2-num">01</span>
       <div>
         <h2>Everything your people need, <em>gathered in one place.</em></h2>
-        <p class="lead">No more scattered spreadsheets and lost employee files. Aevora keeps the whole organisation — every company, branch, and person — in one considered system.</p>
+        <p class="lead">No more scattered spreadsheets and lost employee files. Aevora keeps the whole organisation every company, branch, and person in one considered system.</p>
       </div>
     </div>
     <div class="pillars">
@@ -277,13 +277,13 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
         <span class="p-num">02</span>
         <div class="p-ic"><svg viewBox="0 0 30 30" fill="none"><circle cx="11" cy="10" r="4" stroke="var(--sage-deep)" stroke-width="1.8"/><path d="M4 25c0-4 3-7 7-7s7 3 7 7" stroke="var(--sage-deep)" stroke-width="1.8" stroke-linecap="round"/><path d="M20 5a4 4 0 0 1 0 8M23 25c0-3-1.4-5.5-3.6-6.6" stroke="var(--clay)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <h3>People &amp; org structure</h3>
-        <p>Departments, positions, and reporting lines that mirror how your teams truly sit — ready for the org chart.</p>
+        <p>Departments, positions, and reporting lines that mirror how your teams truly sit ready for the org chart.</p>
       </div>
       <div class="pillar reveal" data-glow>
         <span class="p-num">03</span>
         <div class="p-ic"><svg viewBox="0 0 30 30" fill="none"><rect x="4" y="7" width="22" height="16" rx="3" stroke="var(--sage-deep)" stroke-width="1.8"/><path d="M4 12h22" stroke="var(--sage-deep)" stroke-width="1.8"/><circle cx="9" cy="17.5" r="1.6" fill="var(--clay)"/><path d="M14 18h8" stroke="var(--clay)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <h3>Payroll &amp; time</h3>
-        <p>Pay schedules, attendance, and leave that stay in step with each branch — so payday is never a scramble.</p>
+        <p>Pay schedules, attendance, and leave that stay in step with each branch so payday is never a scramble.</p>
       </div>
     </div>
   </div>
@@ -302,7 +302,7 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
         <div class="s-n">i.</div>
         <div class="s-ic"><svg viewBox="0 0 46 46" fill="none"><rect x="8" y="11" width="30" height="26" rx="4" stroke="var(--sage-deep)" stroke-width="2"/><path d="M23 18v12M17 24h12" stroke="var(--clay)" stroke-width="2" stroke-linecap="round"/></svg></div>
         <h4>Add your company</h4>
-        <p>Legal details, tax IDs, and statutory numbers — the full company profile.</p>
+        <p>Legal details, tax IDs, and statutory numbers the full company profile.</p>
       </div>
       <div class="step reveal">
         <svg class="connector" viewBox="0 0 16 24" fill="none"><path d="M2 12h12M9 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -322,7 +322,7 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
         <div class="s-n">iv.</div>
         <div class="s-ic"><svg viewBox="0 0 46 46" fill="none"><circle cx="23" cy="23" r="15" stroke="var(--sage-deep)" stroke-width="2"/><path d="M16 23l5 5 10-10" stroke="var(--clay)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h4>Run the day-to-day</h4>
-        <p>Attendance, leave, and payroll move together — calm and on time.</p>
+        <p>Attendance, leave, and payroll move together calm and on time.</p>
       </div>
     </div>
   </div>
@@ -337,7 +337,7 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
         <circle cx="180" cy="180" r="160" stroke="var(--sage-glow)" stroke-width="1" stroke-dasharray="2 6" opacity=".3"/>
         <circle cx="300" cy="180" r="4" fill="var(--sage-glow)"/><circle cx="180" cy="60" r="3" fill="var(--gold)"/><circle cx="90" cy="240" r="3" fill="var(--sage-glow)"/>
       </svg>
-      <p class="b-head">Built by people who've <em>felt the Monday-morning payroll panic</em> — and decided it didn't have to be that way.</p>
+      <p class="b-head">Built by people who've <em>felt the Monday-morning payroll panic</em> and decided it didn't have to be that way.</p>
       <div class="band-stats">
         <div class="b-stat"><div class="b-v"><span data-target="1">0</span></div><div class="b-l">Workspace for every company you run</div></div>
         <div class="b-stat"><div class="b-v"><span data-target="4">0</span></div><div class="b-l">Branches mapped in the current demo</div></div>
