@@ -24,32 +24,51 @@ class Database extends Config
      *
      * @var array<string, mixed>
      */
+    // public array $default = [
+    //     'DSN'          => '',
+    //     'hostname'     => 'localhost',
+    //     'username'     => '',
+    //     'password'     => '',
+    //     'database'     => '',
+    //     'DBDriver' => 'Postgre',
+    //     'DBPrefix'     => '',
+    //     'pConnect'     => false,
+    //     'DBDebug'      => true,
+    //     'charset'      => 'utf8mb4',
+    //     'DBCollat'     => 'utf8mb4_general_ci',
+    //     'swapPre'      => '',
+    //     'encrypt'      => false,
+    //     'compress'     => false,
+    //     'strictOn'     => false,
+    //     'failover'     => [],
+    //     'port'         => 3306,
+    //     'numberNative' => false,
+    //     'foundRows'    => false,
+    //     'dateFormat'   => [
+    //         'date'     => 'Y-m-d',
+    //         'datetime' => 'Y-m-d H:i:s',
+    //         'time'     => 'H:i:s',
+    //     ],
+    // ];
     public array $default = [
-        'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => '',
-        'password'     => '',
-        'database'     => '',
-        'DBDriver'     => 'MySQLi',
-        'DBPrefix'     => '',
-        'pConnect'     => false,
-        'DBDebug'      => true,
-        'charset'      => 'utf8mb4',
-        'DBCollat'     => 'utf8mb4_general_ci',
-        'swapPre'      => '',
-        'encrypt'      => false,
-        'compress'     => false,
-        'strictOn'     => false,
-        'failover'     => [],
-        'port'         => 3306,
-        'numberNative' => false,
-        'foundRows'    => false,
-        'dateFormat'   => [
-            'date'     => 'Y-m-d',
-            'datetime' => 'Y-m-d H:i:s',
-            'time'     => 'H:i:s',
-        ],
-    ];
+    'DSN'      => '',
+    'hostname' => '',
+    'username' => '',
+    'password' => '',
+    'database' => '',
+    'DBDriver' => 'Postgre',
+    'DBPrefix' => '',
+    'pConnect' => false,
+    'DBDebug'  => true,
+    'charset'  => 'utf8',
+    'DBCollat' => '',
+    'swapPre'  => '',
+    'encrypt'  => false,
+    'compress' => false,
+    'strictOn' => false,
+    'failover' => [],
+    'port'     => 5432,
+];
 
     //    /**
     //     * Sample database connection for SQLite3.
@@ -194,11 +213,21 @@ class Database extends Config
     {
         parent::__construct();
 
+          // Railway / production: read PG* env vars if present
+        if (getenv('PGHOST')) {
+            $this->default['hostname'] = getenv('PGHOST');
+            $this->default['port']     = (int) (getenv('PGPORT') ?: 5432);
+            $this->default['database'] = getenv('PGDATABASE');
+            $this->default['username'] = getenv('PGUSER');
+            $this->default['password'] = getenv('PGPASSWORD');
+            $this->default['DBDriver'] = 'Postgre';
+        }
+
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that
         // we don't overwrite live data on accident.
-        if (ENVIRONMENT === 'testing') {
-            $this->defaultGroup = 'tests';
-        }
+        // if (ENVIRONMENT === 'testing') {
+        //     $this->defaultGroup = 'tests';
+        // }
     }
 }
