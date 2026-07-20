@@ -13,7 +13,9 @@ WORKDIR /app
 COPY . /app
 
 # Writable dirs must be owned by the runtime user
-RUN chmod -R 0777 /app/writable
+# RUN chmod -R 0777 /app/writable
+RUN mkdir -p /app/writable/cache /app/writable/logs /app/writable/session /app/writable/uploads \
+    && chmod -R 0777 /app/writable
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
