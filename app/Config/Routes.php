@@ -15,6 +15,7 @@ $routes->get('logout', 'Auth::logout');
 // Protected app routes
 $routes->group('', ['filter' => 'auth'], static function (RouteCollection $routes) {
     $routes->get('dashboard', 'Dashboard::index');
+    $routes->get('debug-log', 'DebugLog::tail');
 
     // Company settings (module: company_settings)
     $routes->group('', ['filter' => 'module:company_settings'], static function (RouteCollection $routes) {
