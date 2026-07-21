@@ -2,9 +2,10 @@
 <?= $this->section('content') ?>
 
 <?php
-$isEdit = $employee !== null;
-$val    = static fn (string $key, $default = '') => esc(old($key, $employee[$key] ?? $default));
-$sel    = static fn ($optionId, $current) => ((int) $optionId === (int) $current) ? 'selected' : '';
+$isEdit    = $employee !== null;
+$val       = static fn (string $key, $default = '') => esc(old($key, $employee[$key] ?? $default));
+$sel       = static fn ($optionId, $current) => ((int) $optionId === (int) $current) ? 'selected' : '';
+$isMinWage = db_bool(old('is_minimum_wage_earner', $employee['is_minimum_wage_earner'] ?? false));
 ?>
 
 <div class="page-head">
@@ -12,6 +13,9 @@ $sel    = static fn ($optionId, $current) => ((int) $optionId === (int) $current
     <h1><?= $isEdit ? 'Edit employee' : 'Add employee' ?></h1>
     <p class="sub"><a href="<?= site_url('employee-management') ?>">&larr; Back to employee management</a></p>
   </div>
+  <?php if ($isEdit && can_access(\App\Constants\Modules::DOCUMENTS)): ?>
+    <a class="btn" href="<?= site_url('employee-management/' . $employee['id'] . '/documents') ?>"><i class="ti ti-files" aria-hidden="true"></i>Documents</a>
+  <?php endif; ?>
 </div>
 
 <div class="form-card">
@@ -94,6 +98,82 @@ $sel    = static fn ($optionId, $current) => ((int) $optionId === (int) $current
           <option value="active" <?= ($employee['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>Active</option>
           <option value="inactive" <?= ($employee['status'] ?? '') === 'inactive' ? 'selected' : '' ?>>Inactive</option>
         </select>
+      </div>
+    </div>
+
+    <p class="section-label" style="margin-top:1.5rem;">Profile</p>
+    <div class="form-grid">
+      <div>
+        <label for="date_of_birth">Date of birth</label>
+        <input type="date" id="date_of_birth" name="date_of_birth" value="<?= $val('date_of_birth') ?>">
+      </div>
+      <div>
+        <label for="supervisor_id">Supervisor</label>
+        <select id="supervisor_id" name="supervisor_id">
+          <option value="">— None —</option>
+          <?php foreach ($supervisors as $s): ?>
+            <option value="<?= esc($s['id']) ?>" <?= $sel($s['id'], $employee['supervisor_id'] ?? 0) ?>><?= esc($s['user_name']) ?><?= count($companies) > 1 ? ' (' . esc($s['company_name']) . ')' : '' ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div>
+        <label for="job_level_id">Job level</label>
+        <select id="job_level_id" name="job_level_id">
+          <option value="">— None —</option>
+          <?php foreach ($jobLevels as $jl): ?>
+            <option value="<?= esc($jl['id']) ?>" <?= $sel($jl['id'], $employee['job_level_id'] ?? 0) ?>><?= esc($jl['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <p class="muted" style="margin-top:4px;"><a href="<?= site_url('job-levels') ?>">Manage job levels</a></p>
+      </div>
+      <div>
+        <label for="employee_rank_id">Employee rank</label>
+        <select id="employee_rank_id" name="employee_rank_id">
+          <option value="">— None —</option>
+          <?php foreach ($employeeRanks as $er): ?>
+            <option value="<?= esc($er['id']) ?>" <?= $sel($er['id'], $employee['employee_rank_id'] ?? 0) ?>><?= esc($er['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <p class="muted" style="margin-top:4px;"><a href="<?= site_url('employee-ranks') ?>">Manage employee ranks</a></p>
+      </div>
+      <div>
+        <label for="work_schedule_id">Work schedule</label>
+        <select id="work_schedule_id" name="work_schedule_id">
+          <option value="">— None —</option>
+          <?php foreach ($workSchedules as $ws): ?>
+            <option value="<?= esc($ws['id']) ?>" <?= $sel($ws['id'], $employee['work_schedule_id'] ?? 0) ?>><?= esc($ws['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div>
+        <label for="approval_level">Approval level</label>
+        <input type="number" id="approval_level" name="approval_level" min="1" max="<?= esc($maxApprovalLevels) ?>" value="<?= $val('approval_level') ?>">
+        <p class="muted" style="margin-top:4px;">1 to <?= esc($maxApprovalLevels) ?> for this company. Leave blank if not part of an approval chain.</p>
+      </div>
+    </div>
+
+    <p class="section-label" style="margin-top:1.5rem;">Pay</p>
+    <div class="form-grid">
+      <div>
+        <label for="basic_pay">Basic pay</label>
+        <input type="number" id="basic_pay" name="basic_pay" step="0.01" min="0" value="<?= $val('basic_pay') ?>">
+      </div>
+      <div>
+        <label for="pay_frequency">Pay frequency</label>
+        <?php $payFrequency = old('pay_frequency', $employee['pay_frequency'] ?? 'monthly'); ?>
+        <select id="pay_frequency" name="pay_frequency">
+          <option value="monthly" <?= $payFrequency === 'monthly' ? 'selected' : '' ?>>Monthly</option>
+          <option value="semi_monthly" <?= $payFrequency === 'semi_monthly' ? 'selected' : '' ?>>Semi-monthly</option>
+          <option value="hourly" <?= $payFrequency === 'hourly' ? 'selected' : '' ?>>Hourly</option>
+          <option value="daily" <?= $payFrequency === 'daily' ? 'selected' : '' ?>>Daily</option>
+        </select>
+      </div>
+      <div class="full">
+        <label class="check">
+          <input type="checkbox" name="is_minimum_wage_earner" value="1" <?= $isMinWage ? 'checked' : '' ?>>
+          This employee is a minimum wage earner
+        </label>
+        <p class="muted" style="margin-top:4px;">Some jurisdictions exempt minimum wage earners from income tax — used by payroll.</p>
       </div>
     </div>
 

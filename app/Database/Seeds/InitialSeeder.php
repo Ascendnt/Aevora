@@ -75,7 +75,7 @@ class InitialSeeder extends Seeder
         $employeeId = $this->db->insertID();
         $this->db->table('access_profile_modules')->insertBatch([
             ['access_profile_id' => $employeeId, 'module_key' => Modules::TIME_ATTENDANCE],
-            ['access_profile_id' => $employeeId, 'module_key' => Modules::LEAVE],
+            ['access_profile_id' => $employeeId, 'module_key' => Modules::FILINGS],
         ]);
     }
 }

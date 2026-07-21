@@ -11,6 +11,10 @@ class EmployeeModel extends Model
     protected $allowedFields = [
         'user_id', 'company_id', 'branch_id', 'department_id', 'position_id',
         'access_profile_id', 'employee_number', 'status', 'hire_date',
+        // Onboarding/profile enhancements: org structure, pay basis, approval routing.
+        'date_of_birth', 'supervisor_id', 'job_level_id', 'employee_rank_id',
+        'approval_level', 'basic_pay', 'pay_frequency', 'is_minimum_wage_earner',
+        'work_schedule_id',
     ];
     protected $useTimestamps = true;
 

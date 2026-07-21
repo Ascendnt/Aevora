@@ -1,11 +1,12 @@
 FROM php:8.3-cli
 
-# System deps + PHP extensions CodeIgniter 4 needs (intl, pgsql)
+# System deps + PHP extensions CodeIgniter 4 needs (intl, pgsql, zip for xlsx export)
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev \
         libpq-dev \
+        libzip-dev \
         unzip \
-    && docker-php-ext-install intl pgsql pdo_pgsql \
+    && docker-php-ext-install intl pgsql pdo_pgsql zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

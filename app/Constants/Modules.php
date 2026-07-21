@@ -9,8 +9,9 @@ namespace App\Constants;
 class Modules
 {
     public const EMPLOYEES           = 'employees';
+    public const DOCUMENTS           = 'documents';
     public const TIME_ATTENDANCE     = 'time_attendance';
-    public const LEAVE               = 'leave';
+    public const FILINGS             = 'filings';
     public const PAYROLL             = 'payroll';
     public const COMPANY_SETTINGS    = 'company_settings';
     public const EMPLOYEE_MANAGEMENT = 'employee_management';
@@ -20,8 +21,9 @@ class Modules
     {
         return [
             self::EMPLOYEES           => 'Employees',
+            self::DOCUMENTS           => 'Documents',
             self::TIME_ATTENDANCE     => 'Time & Attendance',
-            self::LEAVE               => 'Leave',
+            self::FILINGS             => 'Filings',
             self::PAYROLL             => 'Payroll',
             self::COMPANY_SETTINGS    => 'Company Settings',
             self::EMPLOYEE_MANAGEMENT => 'Employee Management',

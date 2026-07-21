@@ -6,7 +6,12 @@
     <h1>Employee management</h1>
     <p class="sub">Add employees, assign access, reset passwords</p>
   </div>
-  <a class="btn primary" href="<?= site_url('employee-management/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add employee</a>
+  <div style="display:flex; gap:10px;">
+    <a class="btn" href="<?= site_url('job-levels') ?>">Job levels</a>
+    <a class="btn" href="<?= site_url('employee-ranks') ?>">Employee ranks</a>
+    <a class="btn" href="<?= site_url('employee-management/import') ?>">Bulk import</a>
+    <a class="btn primary" href="<?= site_url('employee-management/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add employee</a>
+  </div>
 </div>
 
 <?php if (empty($employees)): ?>

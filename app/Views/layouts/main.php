@@ -38,14 +38,18 @@ $brand  = hq_company_name();
     </div>
     <nav class="nav" aria-label="Main navigation">
       <a href="<?= site_url('dashboard') ?>" class="<?= $active === 'dashboard' ? 'active' : '' ?>"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</a>
+      <a href="<?= site_url('notifications') ?>" class="<?= $active === 'notifications' ? 'active' : '' ?>"><i class="ti ti-bell" aria-hidden="true"></i>Notifications</a>
       <?php if (can_access(Modules::EMPLOYEES)): ?>
         <a href="<?= site_url('employees') ?>" class="<?= $active === 'employees' ? 'active' : '' ?>"><i class="ti ti-users" aria-hidden="true"></i>Employees</a>
+      <?php endif; ?>
+      <?php if (can_access(Modules::DOCUMENTS)): ?>
+        <a href="<?= site_url('document-templates') ?>" class="<?= $active === 'document-templates' ? 'active' : '' ?>"><i class="ti ti-files" aria-hidden="true"></i>Documents</a>
       <?php endif; ?>
       <?php if (can_access(Modules::TIME_ATTENDANCE)): ?>
         <a href="<?= site_url('attendance') ?>" class="<?= $active === 'attendance' ? 'active' : '' ?>"><i class="ti ti-clock" aria-hidden="true"></i>Time &amp; attendance</a>
       <?php endif; ?>
-      <?php if (can_access(Modules::LEAVE)): ?>
-        <a href="<?= site_url('leave') ?>" class="<?= $active === 'leave' ? 'active' : '' ?>"><i class="ti ti-calendar-off" aria-hidden="true"></i>Leave</a>
+      <?php if (can_access(Modules::FILINGS)): ?>
+        <a href="<?= site_url('filings') ?>" class="<?= $active === 'filings' ? 'active' : '' ?>"><i class="ti ti-calendar-off" aria-hidden="true"></i>Filings</a>
       <?php endif; ?>
       <?php if (can_access(Modules::PAYROLL)): ?>
         <a href="<?= site_url('payroll') ?>" class="<?= $active === 'payroll' ? 'active' : '' ?>"><i class="ti ti-receipt" aria-hidden="true"></i>Payroll</a>
@@ -127,5 +131,6 @@ $brand  = hq_company_name();
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { pm.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); } });
     })();
     </script>
+    <?= $this->include('partials/assistant') ?>
 </body>
 </html>
