@@ -8,7 +8,9 @@
   </div>
   <div style="display:flex; gap:8px;">
     <a class="btn" href="<?= site_url('branches') ?>"><i class="ti ti-map-pin" aria-hidden="true"></i>All branches</a>
-    <a class="btn primary" href="<?= site_url('companies/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add company</a>
+    <?php if (is_superadmin()): ?>
+      <a class="btn primary" href="<?= site_url('companies/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add company</a>
+    <?php endif; ?>
   </div>
 </div>
 
@@ -45,11 +47,13 @@
             </td>
             <td style="white-space:nowrap;">
               <a class="btn sm" href="<?= site_url('companies/' . $c['id'] . '/edit') ?>">Edit</a>
-              <form method="post" action="<?= site_url('companies/' . $c['id'] . '/delete') ?>" style="display:inline;"
-                    onsubmit="return confirm('Delete <?= esc($c['name'], 'js') ?> and all its branches?');">
-                <?= csrf_field() ?>
-                <button type="submit" class="btn sm danger">Delete</button>
-              </form>
+              <?php if (is_superadmin()): ?>
+                <form method="post" action="<?= site_url('companies/' . $c['id'] . '/delete') ?>" style="display:inline;"
+                      onsubmit="return confirm('Delete <?= esc($c['name'], 'js') ?> and all its branches?');">
+                  <?= csrf_field() ?>
+                  <button type="submit" class="btn sm danger">Delete</button>
+                </form>
+              <?php endif; ?>
             </td>
           </tr>
         <?php endforeach; ?>

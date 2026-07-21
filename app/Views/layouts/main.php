@@ -1,10 +1,16 @@
-<?php $active = $active ?? ''; ?>
+<?php
+
+use App\Constants\Modules;
+
+$active = $active ?? '';
+$brand  = hq_company_name();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= esc($title ?? 'Aevora') ?> · Aevora</title>
+  <title><?= esc($title ?? $brand) ?> · <?= esc($brand) ?></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/tabler-icons.min.css">
   <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,17 +34,34 @@
           <circle cx="20" cy="4" r="1.5" fill="var(--clay)"/>
         </svg>
       </span>
-      Aevora
+      <?= esc($brand) ?>
     </div>
     <nav class="nav" aria-label="Main navigation">
       <a href="<?= site_url('dashboard') ?>" class="<?= $active === 'dashboard' ? 'active' : '' ?>"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</a>
-      <a href="<?= site_url('employees') ?>" class="<?= $active === 'employees' ? 'active' : '' ?>"><i class="ti ti-users" aria-hidden="true"></i>Employees</a>
-      <a href="<?= site_url('attendance') ?>" class="<?= $active === 'attendance' ? 'active' : '' ?>"><i class="ti ti-clock" aria-hidden="true"></i>Time &amp; attendance</a>
-      <a href="<?= site_url('leave') ?>" class="<?= $active === 'leave' ? 'active' : '' ?>"><i class="ti ti-calendar-off" aria-hidden="true"></i>Leave</a>
-      <a href="<?= site_url('payroll') ?>" class="<?= $active === 'payroll' ? 'active' : '' ?>"><i class="ti ti-receipt" aria-hidden="true"></i>Payroll</a>
-      <div class="divider" role="separator"></div>
-      <a href="<?= site_url('companies') ?>" class="<?= $active === 'companies' ? 'active' : '' ?>"><i class="ti ti-sitemap" aria-hidden="true"></i>Company settings</a>
-      <a href="<?= site_url('employees') ?>" class="<?= $active === 'employee-mgmt' ? 'active' : '' ?>"><i class="ti ti-id-badge-2" aria-hidden="true"></i>Employee management</a>
+      <?php if (can_access(Modules::EMPLOYEES)): ?>
+        <a href="<?= site_url('employees') ?>" class="<?= $active === 'employees' ? 'active' : '' ?>"><i class="ti ti-users" aria-hidden="true"></i>Employees</a>
+      <?php endif; ?>
+      <?php if (can_access(Modules::TIME_ATTENDANCE)): ?>
+        <a href="<?= site_url('attendance') ?>" class="<?= $active === 'attendance' ? 'active' : '' ?>"><i class="ti ti-clock" aria-hidden="true"></i>Time &amp; attendance</a>
+      <?php endif; ?>
+      <?php if (can_access(Modules::LEAVE)): ?>
+        <a href="<?= site_url('leave') ?>" class="<?= $active === 'leave' ? 'active' : '' ?>"><i class="ti ti-calendar-off" aria-hidden="true"></i>Leave</a>
+      <?php endif; ?>
+      <?php if (can_access(Modules::PAYROLL)): ?>
+        <a href="<?= site_url('payroll') ?>" class="<?= $active === 'payroll' ? 'active' : '' ?>"><i class="ti ti-receipt" aria-hidden="true"></i>Payroll</a>
+      <?php endif; ?>
+      <?php if (can_access(Modules::COMPANY_SETTINGS) || can_access(Modules::EMPLOYEE_MANAGEMENT) || is_superadmin()): ?>
+        <div class="divider" role="separator"></div>
+      <?php endif; ?>
+      <?php if (can_access(Modules::COMPANY_SETTINGS)): ?>
+        <a href="<?= site_url('companies') ?>" class="<?= $active === 'companies' ? 'active' : '' ?>"><i class="ti ti-sitemap" aria-hidden="true"></i>Company settings</a>
+      <?php endif; ?>
+      <?php if (can_access(Modules::EMPLOYEE_MANAGEMENT)): ?>
+        <a href="<?= site_url('employee-management') ?>" class="<?= $active === 'employee-mgmt' ? 'active' : '' ?>"><i class="ti ti-id-badge-2" aria-hidden="true"></i>Employee management</a>
+      <?php endif; ?>
+      <?php if (is_superadmin()): ?>
+        <a href="<?= site_url('access-profiles') ?>" class="<?= $active === 'access-profiles' ? 'active' : '' ?>"><i class="ti ti-shield-lock" aria-hidden="true"></i>Access profiles</a>
+      <?php endif; ?>
     </nav>
     <div class="foot nav">
       <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" style="margin:0 auto 10px;">

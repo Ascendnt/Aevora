@@ -4,16 +4,22 @@ namespace App\Controllers;
 
 use App\Models\BranchModel;
 use App\Models\CompanyModel;
+use App\Models\DepartmentModel;
+use App\Models\PositionModel;
+use App\Traits\CompanyScoped;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Companies extends BaseController
 {
+    use CompanyScoped;
+
     protected CompanyModel $companies;
 
     public function __construct()
     {
         $this->companies = new CompanyModel();
     }
-    
+
     private function handleLogo(array $data, ?array $existing = null): array
     {
         $file = $this->request->getFile('logo');
@@ -32,24 +38,28 @@ class Companies extends BaseController
 
     public function organization(int $id)
     {
+        $this->assertOwnsCompany($id);
+
         $company = $this->companies->find($id);
         if (! $company) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            throw PageNotFoundException::forPageNotFound();
         }
 
         return view('companies/organization', [
             'title'       => 'Organizational structure',
             'active'      => 'companies',
             'company'     => $company,
-            'branches'    => (new \App\Models\BranchModel())->withCompany($id),
-            'departments' => (new \App\Models\DepartmentModel())->where('company_id', $id)->orderBy('name')->findAll(),
-            'positions'   => (new \App\Models\PositionModel())->where('company_id', $id)->orderBy('title')->findAll(),
+            'branches'    => (new BranchModel())->withCompany($id),
+            'departments' => (new DepartmentModel())->where('company_id', $id)->orderBy('name')->findAll(),
+            'positions'   => (new PositionModel())->where('company_id', $id)->orderBy('title')->findAll(),
         ]);
     }
 
     public function addDepartment(int $id)
     {
-        $model = new \App\Models\DepartmentModel();
+        $this->assertOwnsCompany($id);
+
+        $model = new DepartmentModel();
         if (! $model->insert(['company_id' => $id, 'name' => $this->request->getPost('name')])) {
             return redirect()->back()->with('errors', $model->errors());
         }
@@ -58,13 +68,22 @@ class Companies extends BaseController
 
     public function deleteDepartment(int $deptId)
     {
-        (new \App\Models\DepartmentModel())->delete($deptId);
+        $model = new DepartmentModel();
+        $dept  = $model->find($deptId);
+        if (! $dept) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+        $this->assertOwnsCompany((int) $dept['company_id']);
+
+        $model->delete($deptId);
         return redirect()->back()->with('success', 'Department removed.');
     }
 
     public function addPosition(int $id)
     {
-        $model = new \App\Models\PositionModel();
+        $this->assertOwnsCompany($id);
+
+        $model = new PositionModel();
         $dept  = (int) $this->request->getPost('department_id') ?: null;
         if (! $model->insert(['company_id' => $id, 'department_id' => $dept, 'title' => $this->request->getPost('title')])) {
             return redirect()->back()->with('errors', $model->errors());
@@ -74,15 +93,24 @@ class Companies extends BaseController
 
     public function deletePosition(int $posId)
     {
-        (new \App\Models\PositionModel())->delete($posId);
+        $model = new PositionModel();
+        $pos   = $model->find($posId);
+        if (! $pos) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+        $this->assertOwnsCompany((int) $pos['company_id']);
+
+        $model->delete($posId);
         return redirect()->back()->with('success', 'Position removed.');
     }
 
     public function deleteLogo(int $id)
     {
+        $this->assertOwnsCompany($id);
+
         $company = $this->companies->find($id);
         if (! $company) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            throw PageNotFoundException::forPageNotFound();
         }
 
         // Remove the file from disk if it exists
@@ -115,12 +143,16 @@ class Companies extends BaseController
         return view('companies/index', [
             'title'     => 'Company settings',
             'active'    => 'companies',
-            'companies' => $this->companies->withBranchCounts(),
+            'companies' => $this->companies->withBranchCounts(scoped_company_id()),
         ]);
     }
 
     public function new()
     {
+        if (! is_superadmin()) {
+            return redirect()->to('/companies')->with('error', 'Only a superadmin can add new companies.');
+        }
+
         return view('companies/form', [
             'title'   => 'Add company',
             'active'  => 'companies',
@@ -130,8 +162,19 @@ class Companies extends BaseController
 
     public function create()
     {
-        if (! $this->companies->insert($this->cleanInput($this->handleLogo($this->request->getPost())))) {
+        if (! is_superadmin()) {
+            return redirect()->to('/companies')->with('error', 'Only a superadmin can add new companies.');
+        }
+
+        $data          = $this->cleanInput($this->handleLogo($this->request->getPost()));
+        $data['is_hq'] = ! empty($data['is_hq']);
+
+        if (! $this->companies->insert($data)) {
             return redirect()->back()->withInput()->with('errors', $this->companies->errors());
+        }
+
+        if ($data['is_hq']) {
+            $this->companies->makeHq((int) $this->companies->getInsertID());
         }
 
         return redirect()->to('/companies')->with('success', 'Company added.');
@@ -139,9 +182,11 @@ class Companies extends BaseController
 
     public function edit(int $id)
     {
+        $this->assertOwnsCompany($id);
+
         $company = $this->companies->find($id);
         if (! $company) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            throw PageNotFoundException::forPageNotFound();
         }
 
         $branches = (new BranchModel())->withCompany($id);
@@ -156,12 +201,28 @@ class Companies extends BaseController
 
     public function update(int $id)
     {
+        $this->assertOwnsCompany($id);
+
         if (! $this->companies->find($id)) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            throw PageNotFoundException::forPageNotFound();
         }
 
-        if (! $this->companies->update($id, $this->cleanInput($this->handleLogo($this->request->getPost())))) {
+        $data = $this->cleanInput($this->handleLogo($this->request->getPost()));
+
+        // Only a superadmin may change HQ status — the field isn't even
+        // rendered for anyone else, so don't let its absence silently clear it.
+        if (is_superadmin()) {
+            $data['is_hq'] = ! empty($data['is_hq']);
+        } else {
+            unset($data['is_hq']);
+        }
+
+        if (! $this->companies->update($id, $data)) {
             return redirect()->back()->withInput()->with('errors', $this->companies->errors());
+        }
+
+        if (! empty($data['is_hq'])) {
+            $this->companies->makeHq($id);
         }
 
         return redirect()->to('/companies')->with('success', 'Company updated.');
@@ -169,6 +230,10 @@ class Companies extends BaseController
 
     public function delete(int $id)
     {
+        if (! is_superadmin()) {
+            return redirect()->to('/companies')->with('error', 'Only a superadmin can delete companies.');
+        }
+
         $this->companies->delete($id); // branches cascade via FK
 
         return redirect()->to('/companies')->with('success', 'Company deleted (including its branches).');

@@ -4,9 +4,13 @@ namespace App\Controllers;
 
 use App\Models\BranchModel;
 use App\Models\CompanyModel;
+use App\Traits\CompanyScoped;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Branches extends BaseController
 {
+    use CompanyScoped;
+
     protected BranchModel $branches;
 
     public function __construct()
@@ -14,33 +18,51 @@ class Branches extends BaseController
         $this->branches = new BranchModel();
     }
 
+    /** Companies the current user is allowed to pick from (all for superadmin, just their own otherwise). */
+    private function selectableCompanies(): array
+    {
+        $builder = (new CompanyModel())->orderBy('name');
+        $scoped  = scoped_company_id();
+
+        if ($scoped !== null) {
+            $builder->where('id', $scoped);
+        }
+
+        return $builder->findAll();
+    }
+
     public function index()
     {
-        $companyId = (int) ($this->request->getGet('company') ?? 0) ?: null;
+        $scoped    = scoped_company_id();
+        $requested = (int) ($this->request->getGet('company') ?? 0) ?: null;
+        $companyId = $scoped ?? $requested;
 
         return view('branches/index', [
-            'title'      => 'Branches',
-            'active'     => 'companies',
-            'branches'   => $this->branches->withCompany($companyId),
-            'companies'  => (new CompanyModel())->orderBy('name')->findAll(),
-            'filter'     => $companyId,
+            'title'     => 'Branches',
+            'active'    => 'companies',
+            'branches'  => $this->branches->withCompany($companyId),
+            'companies' => $this->selectableCompanies(),
+            'filter'    => $companyId,
         ]);
     }
 
     public function new()
     {
+        $scoped = scoped_company_id();
+
         return view('branches/form', [
             'title'     => 'Add branch',
             'active'    => 'companies',
             'branch'    => null,
-            'companies' => (new CompanyModel())->orderBy('name')->findAll(),
-            'preselect' => (int) ($this->request->getGet('company') ?? 0),
+            'companies' => $this->selectableCompanies(),
+            'preselect' => $scoped ?? (int) ($this->request->getGet('company') ?? 0),
         ]);
     }
 
     public function create()
     {
-        $data          = $this->request->getPost();
+        $data = $this->request->getPost();
+        $this->assertOwnsCompany((int) $data['company_id']);
         $data['is_hq'] = ! empty($data['is_hq']);
 
         if (! $this->branches->insert($data)) {
@@ -58,25 +80,29 @@ class Branches extends BaseController
     {
         $branch = $this->branches->find($id);
         if (! $branch) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            throw PageNotFoundException::forPageNotFound();
         }
+        $this->assertOwnsCompany((int) $branch['company_id']);
 
         return view('branches/form', [
             'title'     => 'Edit branch',
             'active'    => 'companies',
             'branch'    => $branch,
-            'companies' => (new CompanyModel())->orderBy('name')->findAll(),
+            'companies' => $this->selectableCompanies(),
             'preselect' => 0,
         ]);
     }
 
     public function update(int $id)
     {
-        if (! $this->branches->find($id)) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        $branch = $this->branches->find($id);
+        if (! $branch) {
+            throw PageNotFoundException::forPageNotFound();
         }
+        $this->assertOwnsCompany((int) $branch['company_id']);
 
-        $data          = $this->request->getPost();
+        $data = $this->request->getPost();
+        $this->assertOwnsCompany((int) $data['company_id']);
         $data['is_hq'] = ! empty($data['is_hq']);
 
         if (! $this->branches->update($id, $data)) {
@@ -92,6 +118,12 @@ class Branches extends BaseController
 
     public function delete(int $id)
     {
+        $branch = $this->branches->find($id);
+        if (! $branch) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+        $this->assertOwnsCompany((int) $branch['company_id']);
+
         $this->branches->delete($id);
 
         return redirect()->to('/branches')->with('success', 'Branch deleted.');
