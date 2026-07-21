@@ -42,5 +42,17 @@ else
     BASE_URL="http://localhost:${PORT:-8080}/"
 fi
 
-echo "Starting server on port ${PORT:-8080} (app.baseURL=${BASE_URL})"
-exec env "app.baseURL=${BASE_URL}" php spark serve --host 0.0.0.0 --port "${PORT:-8080}"
+# `php spark serve` forks the actual PHP built-in web server as a separate
+# subprocess, and CodeIgniter's own .env loader only trusts variables it set
+# itself via putenv() (see DotEnv::setVariable's local-only getenv check) -
+# an OS-level env var injected from this shell is not guaranteed to count.
+# Writing a real .env is the one config path CodeIgniter always honors.
+echo "Writing runtime .env (app.baseURL=${BASE_URL})"
+cat > /app/.env <<ENVEOF
+CI_ENVIRONMENT = development
+app.baseURL = '${BASE_URL}'
+app.indexPage = ''
+ENVEOF
+
+echo "Starting server on port ${PORT:-8080}"
+exec php spark serve --host 0.0.0.0 --port "${PORT:-8080}"
