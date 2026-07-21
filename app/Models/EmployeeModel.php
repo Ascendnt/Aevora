@@ -49,13 +49,26 @@ class EmployeeModel extends Model
     public function findWithDetails(int $id): ?array
     {
         $row = $this->db->table('employees e')
-            ->select('e.*, u.name AS user_name, u.email AS user_email, c.name AS company_name')
+            ->select('e.*, u.name AS user_name, u.email AS user_email, c.name AS company_name, b.name AS branch_name')
             ->join('users u', 'u.id = e.user_id')
             ->join('companies c', 'c.id = e.company_id')
+            ->join('branches b', 'b.id = e.branch_id', 'left')
             ->where('e.id', $id)
             ->get()->getRowArray();
 
         return $row ?: null;
+    }
+
+    /** Employees currently assigned a given access profile (for the profile's own admin page). */
+    public function byAccessProfile(int $accessProfileId): array
+    {
+        return $this->db->table('employees e')
+            ->select('e.id, e.company_id, u.name AS user_name, c.name AS company_name')
+            ->join('users u', 'u.id = e.user_id')
+            ->join('companies c', 'c.id = e.company_id')
+            ->where('e.access_profile_id', $accessProfileId)
+            ->orderBy('u.name')
+            ->get()->getResultArray();
     }
 
     public function findByUserId(int $userId): ?array

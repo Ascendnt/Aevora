@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Constants\Modules;
 use App\Models\AccessProfileModel;
+use App\Models\EmployeeModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
 
@@ -47,11 +48,12 @@ class AccessProfiles extends BaseController
         }
 
         return view('access_profiles/form', [
-            'title'   => 'Add access profile',
-            'active'  => 'access-profiles',
-            'profile' => null,
-            'checked' => [],
-            'modules' => Modules::all(),
+            'title'      => 'Add access profile',
+            'active'     => 'access-profiles',
+            'profile'    => null,
+            'checked'    => [],
+            'modules'    => Modules::all(),
+            'assignedTo' => [],
         ]);
     }
 
@@ -89,11 +91,12 @@ class AccessProfiles extends BaseController
         }
 
         return view('access_profiles/form', [
-            'title'   => 'Edit access profile',
-            'active'  => 'access-profiles',
-            'profile' => $profile,
-            'checked' => $this->profiles->moduleKeys($id),
-            'modules' => Modules::all(),
+            'title'          => 'Edit access profile',
+            'active'         => 'access-profiles',
+            'profile'        => $profile,
+            'checked'        => $this->profiles->moduleKeys($id),
+            'modules'        => Modules::all(),
+            'assignedTo'     => (new EmployeeModel())->byAccessProfile($id),
         ]);
     }
 

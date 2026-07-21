@@ -39,4 +39,31 @@
   </form>
 </div>
 
+<?php if ($isEdit): ?>
+  <div class="form-card" style="margin-top:20px;">
+    <p class="section-label">Employees using this profile</p>
+    <p class="muted" style="margin:2px 0 12px;">
+      To assign this profile to someone (or move them to a different one), edit them from Employee Management.
+    </p>
+    <?php if (empty($assignedTo)): ?>
+      <p class="muted">Nobody is assigned this profile yet.</p>
+    <?php else: ?>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Employee</th><th>Company</th><th style="width:1%;"></th></tr></thead>
+          <tbody>
+            <?php foreach ($assignedTo as $a): ?>
+              <tr>
+                <td><?= esc($a['user_name']) ?></td>
+                <td><?= esc($a['company_name']) ?></td>
+                <td><a class="btn sm" href="<?= site_url('employee-management/' . $a['id'] . '/edit') ?>">Edit</a></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    <?php endif; ?>
+  </div>
+<?php endif; ?>
+
 <?= $this->endSection() ?>
