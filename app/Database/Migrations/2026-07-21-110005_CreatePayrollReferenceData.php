@@ -126,11 +126,15 @@ class CreatePayrollReferenceData extends Migration
         }
 
         if ($this->db->table('statutory_contributions')->countAllResults() === 0) {
+            // insertBatch() requires every row to share the exact same set of keys
+            // (it builds one column list for the whole batch) — every row below
+            // explicitly lists all six nullable columns, using null where a given
+            // contribution doesn't apply that kind of cap.
             $this->db->table('statutory_contributions')->insertBatch([
-                ['country_code' => 'PH', 'name' => 'SSS', 'employee_share_percent' => 5, 'employer_share_percent' => 10, 'min_base' => 5000, 'max_base' => 35000, 'effective_year' => 2026, 'created_at' => $now],
-                ['country_code' => 'PH', 'name' => 'PhilHealth', 'employee_share_percent' => 2.5, 'employer_share_percent' => 2.5, 'min_contribution' => 500, 'max_contribution' => 5000, 'effective_year' => 2026, 'created_at' => $now],
-                ['country_code' => 'PH', 'name' => 'Pag-IBIG', 'employee_share_percent' => 2, 'employer_share_percent' => 2, 'max_base' => 10000, 'max_contribution' => 200, 'effective_year' => 2026, 'created_at' => $now],
-                ['country_code' => 'AU', 'name' => 'Superannuation Guarantee', 'employee_share_percent' => 0, 'employer_share_percent' => 12, 'effective_year' => 2026, 'created_at' => $now],
+                ['country_code' => 'PH', 'name' => 'SSS', 'employee_share_percent' => 5, 'employer_share_percent' => 10, 'min_base' => 5000, 'max_base' => 35000, 'min_contribution' => null, 'max_contribution' => null, 'effective_year' => 2026, 'created_at' => $now],
+                ['country_code' => 'PH', 'name' => 'PhilHealth', 'employee_share_percent' => 2.5, 'employer_share_percent' => 2.5, 'min_base' => null, 'max_base' => null, 'min_contribution' => 500, 'max_contribution' => 5000, 'effective_year' => 2026, 'created_at' => $now],
+                ['country_code' => 'PH', 'name' => 'Pag-IBIG', 'employee_share_percent' => 2, 'employer_share_percent' => 2, 'min_base' => null, 'max_base' => 10000, 'min_contribution' => null, 'max_contribution' => 200, 'effective_year' => 2026, 'created_at' => $now],
+                ['country_code' => 'AU', 'name' => 'Superannuation Guarantee', 'employee_share_percent' => 0, 'employer_share_percent' => 12, 'min_base' => null, 'max_base' => null, 'min_contribution' => null, 'max_contribution' => null, 'effective_year' => 2026, 'created_at' => $now],
             ]);
         }
     }
