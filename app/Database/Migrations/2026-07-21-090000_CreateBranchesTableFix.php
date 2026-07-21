@@ -4,10 +4,22 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateBranches extends Migration
+/**
+ * A previous version of CreateBranches (2026-07-17-000003) had its table
+ * creation code accidentally replaced by a duplicate of the company profile
+ * fields migration, so the "branches" table was never actually created on
+ * databases that already ran that migration version. This creates it if
+ * still missing; it's a no-op on databases where the corrected
+ * CreateBranches migration already created the table.
+ */
+class CreateBranchesTableFix extends Migration
 {
     public function up(): void
     {
+        if ($this->db->tableExists('branches')) {
+            return;
+        }
+
         $this->forge->addField([
             'id'           => ['type' => 'BIGINT', 'auto_increment' => true],
             'company_id'   => ['type' => 'BIGINT'],
@@ -32,6 +44,8 @@ class CreateBranches extends Migration
 
     public function down(): void
     {
-        $this->forge->dropTable('branches');
+        if ($this->db->tableExists('branches')) {
+            $this->forge->dropTable('branches');
+        }
     }
 }
