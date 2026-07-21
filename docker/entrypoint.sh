@@ -24,5 +24,23 @@ php spark migrate --all
 echo "Seeding (skips automatically if already seeded)..."
 php spark db:seed InitialSeeder
 
-echo "Starting server on port ${PORT:-8080}"
-exec php spark serve --host 0.0.0.0 --port "${PORT:-8080}"
+# Resolve the public base URL so links (e.g. the "Log in" button) point to
+# wherever this container is actually reachable instead of a hardcoded host.
+#   1. An explicit app.baseURL env var (e.g. set via docker-compose) wins.
+#   2. An explicit APP_BASE_URL env var (manual override) wins next.
+#   3. Railway auto-injects RAILWAY_PUBLIC_DOMAIN for any service with a
+#      public domain - use it so Railway deploys need zero extra config.
+#   4. Otherwise fall back to localhost for bare local runs.
+EXISTING_BASE_URL="$(printenv 'app.baseURL' 2>/dev/null || true)"
+if [ -n "$EXISTING_BASE_URL" ]; then
+    BASE_URL="$EXISTING_BASE_URL"
+elif [ -n "$APP_BASE_URL" ]; then
+    BASE_URL="$APP_BASE_URL"
+elif [ -n "$RAILWAY_PUBLIC_DOMAIN" ]; then
+    BASE_URL="https://${RAILWAY_PUBLIC_DOMAIN}/"
+else
+    BASE_URL="http://localhost:${PORT:-8080}/"
+fi
+
+echo "Starting server on port ${PORT:-8080} (app.baseURL=${BASE_URL})"
+exec env "app.baseURL=${BASE_URL}" php spark serve --host 0.0.0.0 --port "${PORT:-8080}"
