@@ -27,7 +27,7 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
         }
 
-        $isSuperadmin = (bool) $user['is_superadmin'];
+        $isSuperadmin = db_bool($user['is_superadmin']);
         $employee     = $isSuperadmin ? null : (new EmployeeModel())->findByUserId((int) $user['id']);
 
         if ($employee && $employee['status'] === 'inactive') {

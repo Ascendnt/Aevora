@@ -26,7 +26,7 @@
       <tbody>
         <?php foreach ($branches as $b): ?>
           <tr>
-            <td><?= esc($b['name']) ?><?php if ($b['is_hq']): ?> <span class="badge hq">HQ</span><?php endif; ?></td>
+            <td><?= esc($b['name']) ?><?php if (db_bool($b['is_hq'])): ?> <span class="badge hq">HQ</span><?php endif; ?></td>
             <td><?= esc($b['code'] ?? '—') ?></td>
             <td><?= esc(trim(($b['city'] ?? '') . ', ' . ($b['province'] ?? ''), ', ') ?: '—') ?></td>
             <td><span class="badge <?= esc($b['status']) ?>"><?= esc(ucfirst($b['status'])) ?></span></td>

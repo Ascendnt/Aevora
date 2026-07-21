@@ -41,7 +41,7 @@
           <tr>
             <td>
               <a href="<?= site_url('branches/' . $b['id'] . '/edit') ?>"><strong><?= esc($b['name']) ?></strong></a>
-              <?php if ($b['is_hq']): ?> <span class="badge hq">HQ</span><?php endif; ?>
+              <?php if (db_bool($b['is_hq'])): ?> <span class="badge hq">HQ</span><?php endif; ?>
             </td>
             <td><?= esc($b['company_name']) ?></td>
             <td><?= esc($b['code'] ?? '—') ?></td>

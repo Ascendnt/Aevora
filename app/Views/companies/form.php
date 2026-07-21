@@ -67,7 +67,7 @@ $val    = static fn (string $key) => esc(old($key, $company[$key] ?? ''));
     <?php if (is_superadmin()): ?>
     <div class="form-grid" style="margin-top:1rem;">
       <div class="full" style="display:flex; align-items:center; gap:8px;">
-        <input type="checkbox" id="is_hq" name="is_hq" value="1" <?= ! empty($company['is_hq']) ? 'checked' : '' ?> style="width:auto;">
+        <input type="checkbox" id="is_hq" name="is_hq" value="1" <?= db_bool($company['is_hq'] ?? false) ? 'checked' : '' ?> style="width:auto;">
         <label for="is_hq" style="margin:0;">Mark as HQ / main company (its name becomes the sidebar brand for everyone)</label>
       </div>
     </div>

@@ -6,7 +6,7 @@ $isEdit   = $branch !== null;
 $val      = static fn (string $key) => esc(old($key, $branch[$key] ?? ''));
 $selected = (int) old('company_id', $branch['company_id'] ?? $preselect ?? 0);
 $status   = old('status', $branch['status'] ?? 'active');
-$isHq     = (bool) old('is_hq', $branch['is_hq'] ?? false);
+$isHq     = db_bool(old('is_hq', $branch['is_hq'] ?? false));
 ?>
 
 <div class="page-head">

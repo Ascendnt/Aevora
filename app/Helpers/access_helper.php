@@ -5,6 +5,23 @@ use App\Models\AccessProfileModel;
 use App\Models\CompanyModel;
 use App\Models\EmployeeModel;
 
+if (! function_exists('db_bool')) {
+    /**
+     * CodeIgniter's Postgres driver returns BOOLEAN columns as literal
+     * 't'/'f' strings, not PHP booleans. PHP's (bool) cast and empty()
+     * both treat the string "f" as truthy, so any naive truthy check on a
+     * boolean column value is silently wrong. Use this instead.
+     */
+    function db_bool($value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        return in_array(strtolower((string) $value), ['1', 't', 'true', 'y', 'yes'], true);
+    }
+}
+
 if (! function_exists('is_superadmin')) {
     function is_superadmin(): bool
     {
