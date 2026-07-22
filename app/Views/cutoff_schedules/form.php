@@ -75,8 +75,8 @@ $weekdays    = ['0' => 'Sunday', '1' => 'Monday', '2' => 'Tuesday', '3' => 'Wedn
       <div id="freqWeeklyRow" style="display:none;">
         <label for="cutoff_weekday">Cutoff weekday</label>
         <select id="cutoff_weekday" name="cutoff_weekday">
-          <?php foreach ($weekdays as $val => $label): ?>
-            <option value="<?= esc($val) ?>" <?= $weekdayVal === $val ? 'selected' : '' ?>><?= esc($label) ?></option>
+          <?php foreach ($weekdays as $wdKey => $label): ?>
+            <option value="<?= esc($wdKey) ?>" <?= (string) $weekdayVal === (string) $wdKey ? 'selected' : '' ?>><?= esc($label) ?></option>
           <?php endforeach; ?>
         </select>
       </div>
