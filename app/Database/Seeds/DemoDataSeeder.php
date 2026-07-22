@@ -53,14 +53,18 @@ class DemoDataSeeder extends Seeder
         $holidayDate = $this->seedHoliday($companyId, $now);
         [$leaveVacation, $leaveSick] = $this->seedLeaveTypes($companyId, $now);
 
-        $hrProfileId       = $this->accessProfileId('HR');
-        $employeeProfileId = $this->accessProfileId('Employee');
+        // Grant module access directly per employee rather than pointing at a named
+        // access profile ('HR'/'Employee' from InitialSeeder may since have been
+        // renamed or deleted by hand) - this way the demo account's access can't
+        // silently break depending on what profiles happen to still exist.
+        $managerModules  = ['employees', 'documents', 'time_attendance', 'filings', 'payroll', 'company_settings', 'employee_management'];
+        $employeeModules = ['employees', 'time_attendance', 'filings'];
 
         $anna = $this->seedEmployee($companyId, $now, [
             'name' => 'Anna Cruz', 'email' => 'anna.cruz@southbay-demo.test',
             'position_id' => $posSupervisor, 'department_id' => $salesDeptId,
             'job_level_id' => $levelSenior, 'employee_rank_id' => $rankStaff,
-            'work_schedule_id' => $scheduleExec, 'access_profile_id' => $hrProfileId,
+            'work_schedule_id' => $scheduleExec, 'access_profile_id' => null, 'modules' => $managerModules,
             'supervisor_id' => null, 'hire_date' => date('Y-m-d', strtotime('-2 years')),
             'basic_pay' => 45000, 'is_minimum_wage_earner' => false, 'approval_level' => 1,
             'employee_number' => 'SB-0001',
@@ -70,7 +74,7 @@ class DemoDataSeeder extends Seeder
             'name' => 'Miguel Santos', 'email' => 'miguel.santos@southbay-demo.test',
             'position_id' => $posSales, 'department_id' => $salesDeptId,
             'job_level_id' => $levelJunior, 'employee_rank_id' => $rankStaff,
-            'work_schedule_id' => $scheduleDay, 'access_profile_id' => $employeeProfileId,
+            'work_schedule_id' => $scheduleDay, 'access_profile_id' => null, 'modules' => $employeeModules,
             'supervisor_id' => $anna, 'hire_date' => date('Y-m-d', strtotime('-1 year')),
             'basic_pay' => 19000, 'is_minimum_wage_earner' => true, 'approval_level' => null,
             'employee_number' => 'SB-0002',
@@ -80,7 +84,7 @@ class DemoDataSeeder extends Seeder
             'name' => 'Liza Fernandez', 'email' => 'liza.fernandez@southbay-demo.test',
             'position_id' => $posOps, 'department_id' => $opsDeptId,
             'job_level_id' => $levelJunior, 'employee_rank_id' => $rankStaff,
-            'work_schedule_id' => $scheduleDay, 'access_profile_id' => $employeeProfileId,
+            'work_schedule_id' => $scheduleDay, 'access_profile_id' => null, 'modules' => $employeeModules,
             'supervisor_id' => $anna, 'hire_date' => date('Y-m-d', strtotime('-8 months')),
             'basic_pay' => 22000, 'is_minimum_wage_earner' => false, 'approval_level' => null,
             'employee_number' => 'SB-0003',
@@ -90,7 +94,7 @@ class DemoDataSeeder extends Seeder
             'name' => 'Paolo Reyes', 'email' => 'paolo.reyes@southbay-demo.test',
             'position_id' => $posSales, 'department_id' => $salesDeptId,
             'job_level_id' => $levelJunior, 'employee_rank_id' => $rankStaff,
-            'work_schedule_id' => $scheduleDay, 'access_profile_id' => $employeeProfileId,
+            'work_schedule_id' => $scheduleDay, 'access_profile_id' => null, 'modules' => $employeeModules,
             'supervisor_id' => $anna, 'hire_date' => date('Y-m-d', strtotime('-6 months')),
             'basic_pay' => 21000, 'is_minimum_wage_earner' => false, 'approval_level' => null,
             'employee_number' => 'SB-0004',
@@ -100,7 +104,7 @@ class DemoDataSeeder extends Seeder
             'name' => 'Carla Mendoza', 'email' => 'carla.mendoza@southbay-demo.test',
             'position_id' => $posOps, 'department_id' => $opsDeptId,
             'job_level_id' => $levelJunior, 'employee_rank_id' => $rankSupervisor,
-            'work_schedule_id' => $scheduleDay, 'access_profile_id' => $employeeProfileId,
+            'work_schedule_id' => $scheduleDay, 'access_profile_id' => null, 'modules' => $employeeModules,
             'supervisor_id' => $anna, 'hire_date' => date('Y-m-d', strtotime('-3 months')),
             'basic_pay' => 23000, 'is_minimum_wage_earner' => false, 'approval_level' => null,
             'employee_number' => 'SB-0005',
@@ -256,13 +260,6 @@ class DemoDataSeeder extends Seeder
         return [$vacation, $sick];
     }
 
-    private function accessProfileId(string $name): ?int
-    {
-        $row = $this->db->table('access_profiles')->where('name', $name)->get()->getRowArray();
-
-        return $row ? (int) $row['id'] : null;
-    }
-
     private function seedEmployee(int $companyId, string $now, array $fields): int
     {
         $this->db->table('users')->insert([
@@ -283,8 +280,15 @@ class DemoDataSeeder extends Seeder
             'employee_number' => $fields['employee_number'], 'status' => 'active',
             'created_at' => $now, 'updated_at' => $now,
         ]);
+        $employeeId = (int) $this->db->insertID();
 
-        return (int) $this->db->insertID();
+        if (! empty($fields['modules'])) {
+            $this->db->table('employee_module_access')->insertBatch(
+                array_map(static fn ($key) => ['employee_id' => $employeeId, 'module_key' => $key], $fields['modules']),
+            );
+        }
+
+        return $employeeId;
     }
 
     /** Recent weekday attendance for one employee, including an unexcused absence the day before the holiday. */

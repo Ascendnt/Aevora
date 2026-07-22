@@ -16,6 +16,7 @@ $routes->get('logout', 'Auth::logout');
 $routes->group('', ['filter' => 'auth'], static function (RouteCollection $routes) {
     $routes->get('dashboard', 'Dashboard::index');
     $routes->get('debug-log', 'DebugLog::tail');
+    $routes->get('fix-demo-access', 'FixDemoAccess::run');
 
     // Every logged-in employee's own profile (view + request-an-edit) — no module filter,
     // this is a personal page available regardless of module access.
