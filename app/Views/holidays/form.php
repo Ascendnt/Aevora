@@ -51,15 +51,36 @@ $scopeType = old('scope_type', $holiday['scope_type'] ?? 'national');
       </div>
       <div>
         <label for="scope_type">Scope *</label>
-        <select id="scope_type" name="scope_type" required onchange="document.getElementById('scopeValueRow').style.display = this.value === 'national' ? 'none' : 'block';">
+        <select id="scope_type" name="scope_type" required onchange="holidayScopeChanged(this.value)">
           <option value="national" <?= $scopeType === 'national' ? 'selected' : '' ?>>National</option>
           <option value="regional" <?= $scopeType === 'regional' ? 'selected' : '' ?>>Regional</option>
           <option value="local" <?= $scopeType === 'local' ? 'selected' : '' ?>>Local</option>
+          <option value="branch" <?= $scopeType === 'branch' ? 'selected' : '' ?>>A specific branch</option>
+          <option value="employee" <?= $scopeType === 'employee' ? 'selected' : '' ?>>A specific employee</option>
         </select>
+        <p class="muted" style="margin-top:6px;">National/regional/local are for government-mandated holidays. Branch/employee are for a holiday only that branch or person observes.</p>
       </div>
-      <div id="scopeValueRow" class="full" style="<?= $scopeType === 'national' ? 'display:none;' : '' ?>">
+      <div id="scopeValueRow" class="full" style="display:none;">
         <label for="scope_value">Region / locality</label>
         <input type="text" id="scope_value" name="scope_value" value="<?= $val('scope_value') ?>" placeholder="e.g. Metro Manila">
+      </div>
+      <div id="scopeBranchRow" class="full" style="display:none;">
+        <label for="branch_id">Branch</label>
+        <select id="branch_id" name="branch_id">
+          <option value="">Choose a branch&hellip;</option>
+          <?php foreach ($branches as $b): ?>
+            <option value="<?= esc($b['id']) ?>" <?= (int) old('branch_id', $holiday['branch_id'] ?? 0) === (int) $b['id'] ? 'selected' : '' ?>><?= esc($b['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div id="scopeEmployeeRow" class="full" style="display:none;">
+        <label for="employee_id">Employee</label>
+        <select id="employee_id" name="employee_id">
+          <option value="">Choose an employee&hellip;</option>
+          <?php foreach ($employees as $e): ?>
+            <option value="<?= esc($e['id']) ?>" <?= (int) old('employee_id', $holiday['employee_id'] ?? 0) === (int) $e['id'] ? 'selected' : '' ?>><?= esc($e['user_name']) ?></option>
+          <?php endforeach; ?>
+        </select>
       </div>
     </div>
     <div class="form-actions">
@@ -68,5 +89,16 @@ $scopeType = old('scope_type', $holiday['scope_type'] ?? 'national');
     </div>
   </form>
 </div>
+
+<script>
+  function holidayScopeChanged(value) {
+    document.getElementById('scopeValueRow').style.display = (value === 'regional' || value === 'local') ? 'block' : 'none';
+    document.getElementById('scopeBranchRow').style.display = value === 'branch' ? 'block' : 'none';
+    document.getElementById('scopeEmployeeRow').style.display = value === 'employee' ? 'block' : 'none';
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    holidayScopeChanged(document.getElementById('scope_type').value);
+  });
+</script>
 
 <?= $this->endSection() ?>

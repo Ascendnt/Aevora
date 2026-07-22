@@ -7,12 +7,24 @@
     <p class="sub">Add employees, assign access, reset passwords</p>
   </div>
   <div style="display:flex; gap:10px;">
-    <a class="btn" href="<?= site_url('job-levels') ?>">Job levels</a>
-    <a class="btn" href="<?= site_url('employee-ranks') ?>">Employee ranks</a>
+    <?php if (can_access_sub('employee_management.job_levels', \App\Constants\Modules::EMPLOYEE_MANAGEMENT)): ?>
+      <a class="btn" href="<?= site_url('job-levels') ?>">Job levels</a>
+    <?php endif; ?>
+    <?php if (can_access_sub('employee_management.ranks', \App\Constants\Modules::EMPLOYEE_MANAGEMENT)): ?>
+      <a class="btn" href="<?= site_url('employee-ranks') ?>">Employee ranks</a>
+    <?php endif; ?>
     <a class="btn" href="<?= site_url('employee-management/import') ?>">Bulk import</a>
     <a class="btn primary" href="<?= site_url('employee-management/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add employee</a>
   </div>
 </div>
+
+<?php if ($pendingProfileCount > 0): ?>
+  <div class="alert" style="background:var(--bg-accent); color:var(--text-accent); margin-bottom:16px;">
+    <a href="<?= site_url('employee-management/profile-requests') ?>" style="font-weight:600;">
+      <?= esc($pendingProfileCount) ?> employee profile change request<?= $pendingProfileCount === 1 ? '' : 's' ?> waiting for review &rarr;
+    </a>
+  </div>
+<?php endif; ?>
 
 <?php if (empty($employees)): ?>
   <div class="empty">

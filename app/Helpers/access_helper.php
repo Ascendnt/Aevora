@@ -102,6 +102,19 @@ if (! function_exists('can_access')) {
     }
 }
 
+if (! function_exists('can_access_sub')) {
+    /**
+     * True if the user has full access to $parentKey (e.g. 'time_attendance')
+     * OR has been granted the finer-grained $subKey specifically (e.g.
+     * 'time_attendance.holidays') — see Modules::subModules(). Full module
+     * access always implies every sub-area under it.
+     */
+    function can_access_sub(string $subKey, string $parentKey): bool
+    {
+        return can_access($parentKey) || in_array($subKey, effective_modules(), true);
+    }
+}
+
 if (! function_exists('hq_company_name')) {
     function hq_company_name(): string
     {
@@ -115,6 +128,6 @@ if (! function_exists('hq_company_name')) {
 
         $hq = (new CompanyModel())->hqCompany();
 
-        return $cached = $hq['name'] ?? 'Aevora';
+        return $cached = $hq['name'] ?? 'Aveora';
     }
 }

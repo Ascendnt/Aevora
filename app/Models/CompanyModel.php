@@ -13,7 +13,7 @@ class CompanyModel extends Model
         'address_line', 'city', 'province', 'postal_code', 'country',
         'logo_path', 'date_established', 'company_size', 'sec_dti_number',
         'sss_number', 'philhealth_number', 'pagibig_number',
-        'business_permit_number', 'rdo_code', 'is_hq',
+        'business_permit_number', 'rdo_code', 'is_hq', 'country_code', 'max_approval_levels',
     ];
     protected $useTimestamps = true;
 

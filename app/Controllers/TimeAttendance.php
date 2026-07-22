@@ -2,11 +2,14 @@
 
 namespace App\Controllers;
 
+use App\Libraries\GeoTimeService;
 use App\Models\AttendanceLogModel;
 use App\Models\HolidayModel;
 use DateInterval;
 use DatePeriod;
 use DateTime;
+use DateTimeZone;
+use Throwable;
 
 class TimeAttendance extends BaseController
 {
@@ -15,6 +18,31 @@ class TimeAttendance extends BaseController
     public function __construct()
     {
         $this->logs = new AttendanceLogModel();
+    }
+
+    /**
+     * "Now" as wall-clock date/time in the employee's own timezone, detected from
+     * their connection (IP geolocation), falling back to their company's country.
+     * Employees on a fixed schedule with hours defined in their own local time
+     * (e.g. 7am-4pm) need punches read the same way, not in the server's UTC.
+     *
+     * @return array{date: string, time: string, timezone: string}
+     */
+    private function resolveLocalNow(array $employee): array
+    {
+        $ip      = $this->request->getIPAddress();
+        $company = db_connect()->table('companies')->select('country_code')->where('id', $employee['company_id'])->get()->getRowArray();
+
+        $timezone = (new GeoTimeService())->resolveForRequest($ip, $company['country_code'] ?? null);
+
+        try {
+            $now = new DateTime('now', new DateTimeZone($timezone));
+        } catch (Throwable) {
+            $timezone = 'UTC';
+            $now      = new DateTime('now', new DateTimeZone('UTC'));
+        }
+
+        return ['date' => $now->format('Y-m-d'), 'time' => $now->format('H:i:s'), 'timezone' => $timezone];
     }
 
     /**
@@ -48,15 +76,17 @@ class TimeAttendance extends BaseController
 
         $logsByDate = $this->logs->rangeForEmployee($employeeId, $periodStart, $today);
 
-        $holidayNamesByDate = array_column(
-            (new HolidayModel())
-                ->where('company_id', (int) $employee['company_id'])
-                ->where('date >=', $periodStart)
-                ->where('date <=', $today)
-                ->findAll(),
-            'name',
-            'date',
-        );
+        $holidayQuery = (new HolidayModel())
+            ->where('company_id', (int) $employee['company_id'])
+            ->where('date >=', $periodStart)
+            ->where('date <=', $today)
+            ->groupStart()->whereIn('scope_type', ['national', 'regional', 'local']);
+        if (! empty($employee['branch_id'])) {
+            $holidayQuery->orGroupStart()->where('scope_type', 'branch')->where('branch_id', $employee['branch_id'])->groupEnd();
+        }
+        $holidayQuery->orGroupStart()->where('scope_type', 'employee')->where('employee_id', (int) $employee['id'])->groupEnd();
+
+        $holidayNamesByDate = array_column($holidayQuery->groupEnd()->findAll(), 'name', 'date');
 
         $rows   = [];
         $period = new DatePeriod(
@@ -120,22 +150,23 @@ class TimeAttendance extends BaseController
         }
 
         $employeeId = (int) $employee['id'];
-        $today      = date('Y-m-d');
-        $existing   = $this->logs->findForDate($employeeId, $today);
+        $local      = $this->resolveLocalNow($employee);
+        $existing   = $this->logs->findForDate($employeeId, $local['date']);
 
         if ($existing && ! empty($existing['time_in'])) {
             return redirect()->to('/attendance')->with('error', 'You already clocked in today at ' . $existing['time_in'] . '.');
         }
 
-        $now = date('H:i:s');
-
         if ($existing) {
-            $this->logs->update($existing['id'], ['time_in' => $now]);
+            $this->logs->update($existing['id'], ['time_in' => $local['time'], 'timezone' => $local['timezone']]);
         } else {
-            $this->logs->insert(['employee_id' => $employeeId, 'log_date' => $today, 'time_in' => $now, 'source' => 'clock']);
+            $this->logs->insert([
+                'employee_id' => $employeeId, 'log_date' => $local['date'], 'time_in' => $local['time'],
+                'source' => 'clock', 'timezone' => $local['timezone'],
+            ]);
         }
 
-        return redirect()->to('/attendance')->with('success', 'Clocked in at ' . $now . '.');
+        return redirect()->to('/attendance')->with('success', 'Clocked in at ' . $local['time'] . ' (' . $local['timezone'] . ').');
     }
 
     public function clockOut()
@@ -146,21 +177,22 @@ class TimeAttendance extends BaseController
         }
 
         $employeeId = (int) $employee['id'];
-        $today      = date('Y-m-d');
-        $existing   = $this->logs->findForDate($employeeId, $today);
+        $local      = $this->resolveLocalNow($employee);
+        $existing   = $this->logs->findForDate($employeeId, $local['date']);
 
         if ($existing && ! empty($existing['time_out'])) {
             return redirect()->to('/attendance')->with('error', 'You already clocked out today at ' . $existing['time_out'] . '.');
         }
 
-        $now = date('H:i:s');
-
         if ($existing) {
-            $this->logs->update($existing['id'], ['time_out' => $now]);
+            $this->logs->update($existing['id'], ['time_out' => $local['time'], 'timezone' => $local['timezone']]);
         } else {
-            $this->logs->insert(['employee_id' => $employeeId, 'log_date' => $today, 'time_out' => $now, 'source' => 'clock']);
+            $this->logs->insert([
+                'employee_id' => $employeeId, 'log_date' => $local['date'], 'time_out' => $local['time'],
+                'source' => 'clock', 'timezone' => $local['timezone'],
+            ]);
         }
 
-        return redirect()->to('/attendance')->with('success', 'Clocked out at ' . $now . '.');
+        return redirect()->to('/attendance')->with('success', 'Clocked out at ' . $local['time'] . ' (' . $local['timezone'] . ').');
     }
 }

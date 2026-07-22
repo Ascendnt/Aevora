@@ -73,6 +73,20 @@ $val    = static fn (string $key) => esc(old($key, $company[$key] ?? ''));
     </div>
     <?php endif; ?>
 
+    <p class="section-label" style="margin-top:1.5rem;">Payroll settings</p>
+    <div class="form-grid">
+      <div>
+        <label for="country_code">Payroll country code</label>
+        <input type="text" id="country_code" name="country_code" maxlength="2" style="text-transform:uppercase; max-width:100px;" value="<?= $val('country_code') ?>" placeholder="PH">
+        <p class="muted" style="margin-top:6px;">Determines which country's tax brackets and statutory contributions payroll uses (e.g. PH, AU). Defaults to PH if left blank.</p>
+      </div>
+      <div>
+        <label for="max_approval_levels">Approval levels</label>
+        <input type="number" id="max_approval_levels" name="max_approval_levels" min="1" max="20" value="<?= $val('max_approval_levels', 5) ?>">
+        <p class="muted" style="margin-top:6px;">How many approval tiers this company's org chart uses (1&ndash;20). Employee Management enforces this range.</p>
+      </div>
+    </div>
+
     <p class="section-label" style="margin-top:1.5rem;">Government registration (Philippines)</p>
     <div class="form-grid">
       <div>

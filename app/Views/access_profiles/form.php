@@ -22,12 +22,26 @@
       </div>
       <div class="full">
         <label>Modules included</label>
+        <p class="muted" style="margin:2px 0 8px;">Check a whole module for full access, or just its sub-areas below for narrower access.</p>
         <?php foreach ($modules as $key => $label): ?>
-          <label style="display:inline-flex; align-items:center; gap:6px; margin:6px 16px 6px 0; font-weight:400;">
-            <input type="checkbox" name="modules[]" value="<?= esc($key) ?>" style="width:auto;"
-                   <?= in_array($key, $checked, true) ? 'checked' : '' ?>>
-            <?= esc($label) ?>
-          </label>
+          <div style="margin-bottom:10px;">
+            <label style="display:inline-flex; align-items:center; gap:6px; margin:0 16px 4px 0; font-weight:500;">
+              <input type="checkbox" name="modules[]" value="<?= esc($key) ?>" style="width:auto;"
+                     <?= in_array($key, $checked, true) ? 'checked' : '' ?>>
+              <?= esc($label) ?>
+            </label>
+            <?php if (! empty($subModules[$key])): ?>
+              <div style="margin-left:26px; display:flex; flex-wrap:wrap; gap:2px 16px;">
+                <?php foreach ($subModules[$key] as $subKey => $subLabel): ?>
+                  <label style="display:inline-flex; align-items:center; gap:6px; font-weight:400; color:var(--text-secondary);">
+                    <input type="checkbox" name="modules[]" value="<?= esc($subKey) ?>" style="width:auto;"
+                           <?= in_array($subKey, $checked, true) ? 'checked' : '' ?>>
+                    <?= esc($subLabel) ?>
+                  </label>
+                <?php endforeach; ?>
+              </div>
+            <?php endif; ?>
+          </div>
         <?php endforeach; ?>
       </div>
     </div>

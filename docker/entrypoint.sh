@@ -23,6 +23,7 @@ php spark migrate --all
 
 echo "Seeding (skips automatically if already seeded)..."
 php spark db:seed InitialSeeder
+php spark db:seed DemoDataSeeder
 
 # Resolve the public base URL so links (e.g. the "Log in" button) point to
 # wherever this container is actually reachable instead of a hardcoded host.

@@ -7,6 +7,7 @@ $typeLabels = [
     'official_business' => 'Official business',
     'schedule_change'   => 'Schedule change',
     'time_adjustment'   => 'Time adjustment',
+    'overtime'          => 'Overtime',
 ];
 
 $statusBadge = static function (string $status): string {
@@ -37,6 +38,9 @@ $fmtDates = static function (array $dates): string {
     <p class="sub">Leave, official business, schedule changes, and time adjustments you've filed</p>
   </div>
   <div style="display:flex; gap:10px;">
+    <?php if (can_access_sub('filings.leave_types', \App\Constants\Modules::FILINGS)): ?>
+      <a class="btn" href="<?= site_url('leave-types') ?>"><i class="ti ti-settings" aria-hidden="true"></i>Leave types</a>
+    <?php endif; ?>
     <a class="btn" href="<?= site_url('filings/my-approvals') ?>"><i class="ti ti-checklist" aria-hidden="true"></i>My approvals</a>
     <a class="btn primary" href="<?= site_url('filings/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>New filing</a>
   </div>
@@ -73,6 +77,8 @@ $fmtDates = static function (array $dates): string {
                 <?= esc($f['requested_schedule_name'] ?? '—') ?>
               <?php elseif (in_array($f['filing_type'], ['official_business', 'time_adjustment'], true)): ?>
                 <?= esc(trim(($f['requested_time_in'] ?? '') . ' – ' . ($f['requested_time_out'] ?? ''), ' –')) ?: '—' ?>
+              <?php elseif ($f['filing_type'] === 'overtime'): ?>
+                <?= $f['overtime_hours'] !== null ? esc($f['overtime_hours']) . ' hr(s)' : '—' ?>
               <?php else: ?>
                 —
               <?php endif; ?>

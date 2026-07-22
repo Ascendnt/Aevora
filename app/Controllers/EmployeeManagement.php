@@ -8,6 +8,7 @@ use App\Models\BranchModel;
 use App\Models\CompanyModel;
 use App\Models\DepartmentModel;
 use App\Models\EmployeeModel;
+use App\Models\EmployeeProfileChangeRequestModel;
 use App\Models\EmployeeRankModel;
 use App\Models\JobLevelModel;
 use App\Models\PositionModel;
@@ -124,16 +125,97 @@ class EmployeeManagement extends BaseController
             'maxApprovalLevels' => $maxApprovalLevels,
             'accessProfiles'    => (new AccessProfileModel())->orderBy('name')->findAll(),
             'modules'           => Modules::all(),
+            'subModules'        => Modules::subModules(),
         ];
     }
 
     public function index()
     {
         return view('employee_management/index', [
-            'title'     => 'Employee management',
-            'active'    => 'employee-mgmt',
-            'employees' => $this->employees->withDetails(scoped_company_id()),
+            'title'                => 'Employee management',
+            'active'               => 'employee-mgmt',
+            'employees'            => $this->employees->withDetails(scoped_company_id()),
+            'pendingProfileCount'  => (new EmployeeProfileChangeRequestModel())->pendingCount(scoped_company_id()),
         ]);
+    }
+
+    // ---------------------------------------------------------------------
+    // Employee self-service profile change requests
+    // ---------------------------------------------------------------------
+
+    public function profileRequests()
+    {
+        return view('employee_management/profile_requests', [
+            'title'    => 'Profile change requests',
+            'active'   => 'employee-mgmt',
+            'requests' => (new EmployeeProfileChangeRequestModel())->pendingWithDetails(scoped_company_id()),
+        ]);
+    }
+
+    public function approveProfileRequest(int $id)
+    {
+        $requests = new EmployeeProfileChangeRequestModel();
+        $request  = $requests->find($id);
+        if (! $request) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        $employee = $this->employees->find((int) $request['employee_id']);
+        if (! $employee) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+        $this->assertOwnsCompany((int) $employee['company_id']);
+
+        if ($request['status'] !== 'pending') {
+            return redirect()->to('/employee-management/profile-requests')->with('error', 'That request has already been decided.');
+        }
+
+        $changes = json_decode((string) $request['requested_changes'], true) ?: [];
+        $update  = [];
+        foreach ($changes as $field => $change) {
+            $update[$field] = $change['to'] ?? null;
+        }
+
+        if ($update !== []) {
+            $this->employees->update((int) $request['employee_id'], $update);
+        }
+
+        $requests->update($id, [
+            'status'              => 'approved',
+            'reviewed_by_user_id' => (int) session()->get('user_id'),
+            'review_note'         => trim((string) $this->request->getPost('review_note')) ?: null,
+            'reviewed_at'         => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect()->to('/employee-management/profile-requests')->with('success', 'Profile change request approved and applied.');
+    }
+
+    public function rejectProfileRequest(int $id)
+    {
+        $requests = new EmployeeProfileChangeRequestModel();
+        $request  = $requests->find($id);
+        if (! $request) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        $employee = $this->employees->find((int) $request['employee_id']);
+        if (! $employee) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+        $this->assertOwnsCompany((int) $employee['company_id']);
+
+        if ($request['status'] !== 'pending') {
+            return redirect()->to('/employee-management/profile-requests')->with('error', 'That request has already been decided.');
+        }
+
+        $requests->update($id, [
+            'status'              => 'rejected',
+            'reviewed_by_user_id' => (int) session()->get('user_id'),
+            'review_note'         => trim((string) $this->request->getPost('review_note')) ?: null,
+            'reviewed_at'         => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect()->to('/employee-management/profile-requests')->with('success', 'Profile change request rejected.');
     }
 
     public function new()
@@ -189,7 +271,7 @@ class EmployeeManagement extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->employees->errors());
         }
 
-        $grants = array_intersect((array) ($post['modules'] ?? []), Modules::keys());
+        $grants = array_filter((array) ($post['modules'] ?? []), static fn ($k) => Modules::isValidAny((string) $k));
         $this->employees->setIndividualModules((int) $employeeId, $grants);
 
         return redirect()->to('/employee-management')->with('success', 'Employee added.');
@@ -242,7 +324,7 @@ class EmployeeManagement extends BaseController
         $this->users->update($employee['user_id'], ['name' => $name, 'email' => $email]);
         $this->employees->update($id, $this->employeeFields($post, $companyId));
 
-        $grants = array_intersect((array) ($post['modules'] ?? []), Modules::keys());
+        $grants = array_filter((array) ($post['modules'] ?? []), static fn ($k) => Modules::isValidAny((string) $k));
         $this->employees->setIndividualModules($id, $grants);
 
         return redirect()->to('/employee-management')->with('success', 'Employee updated.');

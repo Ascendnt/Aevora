@@ -8,6 +8,18 @@ $selected  = (int) old('company_id', $cutoff['company_id'] ?? $preselect ?? 0);
 $scopeType = old('scope_type', $cutoff['scope_type'] ?? 'company');
 $scopeId   = (int) old('scope_id', $cutoff['scope_id'] ?? 0);
 $frequency = old('frequency', $cutoff['frequency'] ?? 'semi_monthly');
+
+$periodConfig = [];
+if ($cutoff !== null && ! empty($cutoff['period_config'])) {
+    $decoded      = json_decode((string) $cutoff['period_config'], true);
+    $periodConfig = is_array($decoded) ? $decoded : [];
+}
+$cutoffDay   = old('cutoff_day', (string) ($periodConfig['day_of_month'] ?? $periodConfig['cutoff_day'] ?? ''));
+$cutoffDays  = $periodConfig['cutoff_days'] ?? $periodConfig['days'] ?? [];
+$cutoffDay1  = old('cutoff_day_1', (string) ($cutoffDays[0] ?? ''));
+$cutoffDay2  = old('cutoff_day_2', (string) ($cutoffDays[1] ?? ''));
+$weekdayVal  = old('cutoff_weekday', (string) ($periodConfig['weekday'] ?? $periodConfig['day_of_week'] ?? '5'));
+$weekdays    = ['0' => 'Sunday', '1' => 'Monday', '2' => 'Tuesday', '3' => 'Wednesday', '4' => 'Thursday', '5' => 'Friday', '6' => 'Saturday'];
 ?>
 
 <div class="page-head">
@@ -38,10 +50,34 @@ $frequency = old('frequency', $cutoff['frequency'] ?? 'semi_monthly');
       </div>
       <div>
         <label for="frequency">Frequency *</label>
-        <select id="frequency" name="frequency" required>
+        <select id="frequency" name="frequency" required onchange="cutoffFrequencyChanged(this.value)">
           <option value="monthly" <?= $frequency === 'monthly' ? 'selected' : '' ?>>Monthly</option>
           <option value="semi_monthly" <?= $frequency === 'semi_monthly' ? 'selected' : '' ?>>Semi-monthly</option>
           <option value="weekly" <?= $frequency === 'weekly' ? 'selected' : '' ?>>Weekly</option>
+        </select>
+      </div>
+
+      <div id="freqMonthlyRow" style="display:none;">
+        <label for="cutoff_day">Cutoff day of month</label>
+        <input type="text" id="cutoff_day" name="cutoff_day" value="<?= esc($cutoffDay) ?>" placeholder="e.g. 31 or last">
+        <p class="muted" style="margin-top:6px;">1–31, or "last" for the last day of the month.</p>
+      </div>
+
+      <div id="freqSemiMonthlyRow" class="full" style="display:none;">
+        <label>Cutoff days</label>
+        <div style="display:flex; gap:14px; max-width:400px;">
+          <input type="text" name="cutoff_day_1" value="<?= esc($cutoffDay1) ?>" placeholder="e.g. 15">
+          <input type="text" name="cutoff_day_2" value="<?= esc($cutoffDay2) ?>" placeholder="e.g. 30 or last">
+        </div>
+        <p class="muted" style="margin-top:6px;">Two cutoff days per month — e.g. 15 and 30, or 5 and 20. Use "last" for the last day of the month.</p>
+      </div>
+
+      <div id="freqWeeklyRow" style="display:none;">
+        <label for="cutoff_weekday">Cutoff weekday</label>
+        <select id="cutoff_weekday" name="cutoff_weekday">
+          <?php foreach ($weekdays as $val => $label): ?>
+            <option value="<?= esc($val) ?>" <?= $weekdayVal === $val ? 'selected' : '' ?>><?= esc($label) ?></option>
+          <?php endforeach; ?>
         </select>
       </div>
 
@@ -102,6 +138,15 @@ $frequency = old('frequency', $cutoff['frequency'] ?? 'semi_monthly');
 </div>
 
 <script>
+  function cutoffFrequencyChanged(value) {
+    document.getElementById('freqMonthlyRow').style.display = value === 'monthly' ? 'block' : 'none';
+    document.getElementById('freqSemiMonthlyRow').style.display = value === 'semi_monthly' ? 'block' : 'none';
+    document.getElementById('freqWeeklyRow').style.display = value === 'weekly' ? 'block' : 'none';
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    cutoffFrequencyChanged(document.getElementById('frequency').value);
+  });
+
   function cutoffScopeChanged(value) {
     document.getElementById('scopeDepartmentRow').style.display = value === 'department' ? 'block' : 'none';
     document.getElementById('scopeBranchRow').style.display = value === 'branch' ? 'block' : 'none';

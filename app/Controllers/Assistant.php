@@ -52,10 +52,12 @@ class Assistant extends BaseController
         // API integration elsewhere in this app.
         // ------------------------------------------------------------------
 
+        $brand = hq_company_name();
+
         return $this->response->setJSON([
             'ok'        => false,
             'connected' => false,
-            'reply'     => "The Aevora Assistant isn't connected to an AI provider yet. This is a placeholder reply — "
+            'reply'     => "The {$brand} Assistant isn't connected to an AI provider yet. This is a placeholder reply — "
                 . 'once an LLM API key or an automation tool like n8n/Zapier is wired in here, '
                 . "I'll be able to give real answers and take real actions.",
         ]);

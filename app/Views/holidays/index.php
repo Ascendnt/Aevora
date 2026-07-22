@@ -57,6 +57,14 @@
         Coverage varies by country &mdash; some countries return few or no holidays.
       </p>
     </form>
+    <form method="post" action="<?= site_url('holidays/bulk-delete-source') ?>" style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);"
+          onsubmit="return confirm('Remove every API-synced holiday for <?= esc($year, 'js') ?> for this company? Manually-added holidays are not affected. This cannot be undone.');">
+      <?= csrf_field() ?>
+      <input type="hidden" name="company_id" value="<?= esc($filter) ?>">
+      <input type="hidden" name="year" value="<?= esc($year) ?>">
+      <button type="submit" class="btn sm danger"><i class="ti ti-trash" aria-hidden="true"></i>Remove all API-synced holidays for <?= esc($year) ?></button>
+      <span class="muted" style="margin-left:10px;">Use this if a sync accidentally pulled the wrong country &mdash; manual entries are untouched.</span>
+    </form>
   </div>
 <?php endif; ?>
 
@@ -83,7 +91,12 @@
             <td><a href="<?= site_url('holidays/' . $h['id'] . '/edit') ?>"><?= esc($h['name']) ?></a></td>
             <?php if (count($companies) > 1): ?><td><?= esc($h['company_name']) ?></td><?php endif; ?>
             <td><span class="badge <?= $h['holiday_type'] === 'legal' ? 'active' : 'inactive' ?>"><?= esc(ucfirst($h['holiday_type'])) ?></span></td>
-            <td><?= esc(ucfirst($h['scope_type'])) ?><?= $h['scope_value'] ? ' &mdash; ' . esc($h['scope_value']) : '' ?></td>
+            <td>
+              <?= esc(ucfirst($h['scope_type'])) ?>
+              <?php if ($h['scope_value']): ?> &mdash; <?= esc($h['scope_value']) ?><?php endif; ?>
+              <?php if ($h['scope_type'] === 'branch'): ?> &mdash; <?= esc($h['branch_name'] ?? '— deleted branch —') ?><?php endif; ?>
+              <?php if ($h['scope_type'] === 'employee'): ?> &mdash; <?= esc($h['employee_name'] ?? '— deleted employee —') ?><?php endif; ?>
+            </td>
             <td class="muted"><?= $h['source'] === 'api_import' ? 'API sync' : 'Manual' ?></td>
             <td style="white-space:nowrap;">
               <a class="btn sm" href="<?= site_url('holidays/' . $h['id'] . '/edit') ?>">Edit</a>

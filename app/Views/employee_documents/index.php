@@ -116,6 +116,9 @@ $statusBadge = static function (string $status): string {
             <td><?= esc($d['issued_date'] ?? '—') ?></td>
             <td style="white-space:nowrap;">
               <a class="btn sm" href="<?= site_url('documents/' . $d['id'] . '/view') ?>" target="_blank" rel="noopener">View</a>
+              <?php if (empty($d['file_path'])): ?>
+                <a class="btn sm" href="<?= site_url('documents/' . $d['id'] . '/pdf') ?>">PDF</a>
+              <?php endif; ?>
 
               <form method="post" action="<?= site_url('documents/' . $d['id'] . '/status') ?>" style="display:inline;">
                 <?= csrf_field() ?>

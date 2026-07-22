@@ -1,6 +1,9 @@
 <?php
 /**
- * Aevora Assistant — floating placeholder chat widget.
+ * {Brand} Assistant — floating placeholder chat widget. Brand name is
+ * read dynamically via hq_company_name() (same source main.php's sidebar
+ * uses), never hardcoded, so it always matches whatever the HQ company is
+ * actually named.
  *
  * NOT wired to any real LLM. There are no AI provider API keys configured
  * for this deployment yet — this is a UI placeholder only. See
@@ -14,6 +17,7 @@
  *
  *   <?= $this->include('partials/assistant') ?>
  */
+$assistantBrand = hq_company_name();
 ?>
 <div id="aevora-assistant-root">
 
@@ -23,7 +27,7 @@
           aria-haspopup="dialog"
           aria-expanded="false"
           aria-controls="aevora-assistant-panel"
-          title="Aevora Assistant">
+          title="<?= esc($assistantBrand) ?> Assistant">
     <svg viewBox="0 0 24 24" width="26" height="26" fill="none" aria-hidden="true">
       <path d="M4 5.5C4 4.67 4.67 4 5.5 4h13c.83 0 1.5.67 1.5 1.5v10c0 .83-.67 1.5-1.5 1.5H9.8L6 20.5V17H5.5C4.67 17 4 16.33 4 15.5v-10Z"
             fill="currentColor" opacity=".95"/>
@@ -44,7 +48,7 @@
 
     <div class="aevora-assistant-header">
       <div class="aevora-assistant-header-title">
-        <span id="aevora-assistant-title">Aevora Assistant</span>
+        <span id="aevora-assistant-title"><?= esc($assistantBrand) ?> Assistant</span>
         <span class="aevora-assistant-badge">Coming soon</span>
       </div>
       <button type="button" id="aevora-assistant-close" class="aevora-assistant-close" aria-label="Close assistant panel">&times;</button>
@@ -52,10 +56,10 @@
 
     <div class="aevora-assistant-body">
       <p>
-        This panel is a placeholder for what will become the <strong>Aevora Assistant</strong> —
+        This panel is a placeholder for what will become the <strong><?= esc($assistantBrand) ?> Assistant</strong> —
         an AI helper built right into the app. Once it's connected to an AI provider
         (an LLM API key, or an automation tool like <strong>n8n</strong> or <strong>Zapier</strong>),
-        it'll be able to help you navigate Aevora, answer questions about your employees,
+        it'll be able to help you navigate <?= esc($assistantBrand) ?>, answer questions about your employees,
         payroll, and leave data, and even take actions on your behalf.
       </p>
 
@@ -81,7 +85,7 @@
                class="aevora-assistant-input"
                placeholder="Ask the assistant… (not connected yet)"
                readonly
-               aria-label="Message the Aevora Assistant (not connected yet)">
+               aria-label="Message the <?= esc($assistantBrand) ?> Assistant (not connected yet)">
         <button type="submit" id="aevora-assistant-send" class="aevora-assistant-send" aria-label="Send message">
           <svg viewBox="0 0 24 24" width="17" height="17" fill="none" aria-hidden="true">
             <path d="M3.4 20.6 21 12 3.4 3.4 3 10l12 2-12 2 .4 6.6Z" fill="currentColor"/>
@@ -371,7 +375,7 @@
   // fetch/AJAX request is made; we just surface a friendly inline note.
   function showNotConnected() {
     if (!msg) { return; }
-    msg.textContent = 'Not connected yet — the Aevora Assistant isn\'t wired up to an AI provider yet.';
+    msg.textContent = 'Not connected yet — the <?= esc($assistantBrand, 'js') ?> Assistant isn\'t wired up to an AI provider yet.';
     msg.hidden = false;
   }
 

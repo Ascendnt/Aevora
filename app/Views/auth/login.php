@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign in · Aevora</title>
+  <?php $brand = hq_company_name(); ?>
+  <title>Sign in · <?= esc($brand) ?></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/tabler-icons.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,7 +29,7 @@
             <circle cx="20" cy="4" r="1.6" fill="#f0dccf"/>
           </svg>
         </span>
-        Aevora
+        <?= esc($brand) ?>
       </div>
       <div>
         <p class="la-head">People-first HR,<br>grown with care.</p>

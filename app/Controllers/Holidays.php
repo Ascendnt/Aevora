@@ -2,7 +2,9 @@
 
 namespace App\Controllers;
 
+use App\Models\BranchModel;
 use App\Models\CompanyModel;
+use App\Models\EmployeeModel;
 use App\Models\HolidayModel;
 use App\Traits\CompanyScoped;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -33,6 +35,19 @@ class Holidays extends BaseController
         return $builder->findAll();
     }
 
+    /** Dropdown data for the branch/employee scope selects, scoped to one company. */
+    private function scopeOptions(?int $companyId): array
+    {
+        if (! $companyId) {
+            return ['branches' => [], 'employees' => []];
+        }
+
+        return [
+            'branches'  => (new BranchModel())->where('company_id', $companyId)->orderBy('name')->findAll(),
+            'employees' => (new EmployeeModel())->withDetails($companyId),
+        ];
+    }
+
     public function index()
     {
         $scoped    = scoped_company_id();
@@ -52,15 +67,16 @@ class Holidays extends BaseController
 
     public function new()
     {
-        $scoped = scoped_company_id();
+        $scoped    = scoped_company_id();
+        $companyId = $scoped ?? (int) ($this->request->getGet('company') ?? 0);
 
-        return view('holidays/form', [
+        return view('holidays/form', array_merge([
             'title'     => 'Add holiday',
             'active'    => 'attendance',
             'holiday'   => null,
             'companies' => $this->selectableCompanies(),
-            'preselect' => $scoped ?? (int) ($this->request->getGet('company') ?? 0),
-        ]);
+            'preselect' => $companyId,
+        ], $this->scopeOptions($companyId ?: null)));
     }
 
     public function create()
@@ -88,13 +104,13 @@ class Holidays extends BaseController
         }
         $this->assertOwnsCompany((int) $holiday['company_id']);
 
-        return view('holidays/form', [
+        return view('holidays/form', array_merge([
             'title'     => 'Edit holiday',
             'active'    => 'attendance',
             'holiday'   => $holiday,
             'companies' => $this->selectableCompanies(),
             'preselect' => 0,
-        ]);
+        ], $this->scopeOptions((int) $holiday['company_id'])));
     }
 
     public function update(int $id)
@@ -205,9 +221,24 @@ class Holidays extends BaseController
 
     private function fields(array $post, int $companyId): array
     {
-        $scopeType = in_array($post['scope_type'] ?? 'national', ['national', 'regional', 'local'], true)
+        $scopeType = in_array($post['scope_type'] ?? 'national', ['national', 'regional', 'local', 'branch', 'employee'], true)
             ? $post['scope_type']
             : 'national';
+
+        $branchId   = null;
+        $employeeId = null;
+
+        if ($scopeType === 'branch') {
+            $candidate = (int) ($post['branch_id'] ?? 0);
+            $branch    = $candidate ? (new BranchModel())->where('id', $candidate)->where('company_id', $companyId)->first() : null;
+            $branchId  = $branch ? $candidate : null;
+        }
+
+        if ($scopeType === 'employee') {
+            $candidate  = (int) ($post['employee_id'] ?? 0);
+            $employee   = $candidate ? (new EmployeeModel())->where('id', $candidate)->where('company_id', $companyId)->first() : null;
+            $employeeId = $employee ? $candidate : null;
+        }
 
         return [
             'company_id'   => $companyId,
@@ -215,7 +246,25 @@ class Holidays extends BaseController
             'date'         => trim((string) ($post['date'] ?? '')),
             'holiday_type' => in_array($post['holiday_type'] ?? 'legal', ['legal', 'special'], true) ? $post['holiday_type'] : 'legal',
             'scope_type'   => $scopeType,
-            'scope_value'  => $scopeType !== 'national' ? (trim((string) ($post['scope_value'] ?? '')) ?: null) : null,
+            'scope_value'  => in_array($scopeType, ['regional', 'local'], true) ? (trim((string) ($post['scope_value'] ?? '')) ?: null) : null,
+            'branch_id'    => $branchId,
+            'employee_id'  => $employeeId,
         ];
+    }
+
+    /**
+     * Escape hatch for "we synced the wrong country" — wipes every API-synced
+     * (never manually-entered) holiday for a company/year in one action, so
+     * HR can re-sync cleanly. Manual holidays are never touched.
+     */
+    public function bulkDeleteBySource()
+    {
+        $companyId = (int) $this->request->getPost('company_id');
+        $this->assertOwnsCompany($companyId);
+
+        $year    = (int) ($this->request->getPost('year') ?? date('Y'));
+        $removed = $this->holidays->deleteSyncedForYear($companyId, $year);
+
+        return redirect()->to('/holidays')->with('success', "Removed {$removed} API-synced holiday(s) for {$year}.");
     }
 }

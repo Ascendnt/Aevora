@@ -164,20 +164,42 @@ class CutoffSchedules extends BaseController
     }
 
     /**
-     * A sensible default period_config JSON per frequency — no dedicated UI
-     * for this field. Shape matches what CutoffScheduleModel::upcomingReminders()
-     * (added by the payroll module) actually parses, so the payroll dashboard's
-     * "upcoming cutoff" reminder can read what gets saved here:
-     *   monthly:      {"day": 31}                                — 31 means "last day of month"
-     *   semi_monthly: {"first_end_day": 15, "second_end_day": 31} — 31 means "last day of month"
-     *   weekly:       {"end_weekday": 5}                         — 0=Sunday .. 6=Saturday (5=Friday)
+     * Builds period_config JSON from the HR-entered day(s), falling back to a
+     * sensible default only when left blank. Shape matches what
+     * CutoffReminderService actually parses:
+     *   monthly:      {"day_of_month": 31}                     — 31 means "last day of month"
+     *   semi_monthly: {"cutoff_days": [15, 31]}                — 31 means "last day of month"
+     *   weekly:       {"weekday": 5}                           — 0=Sunday .. 6=Saturday (5=Friday)
      */
-    private function defaultPeriodConfig(string $frequency): string
+    private function buildPeriodConfig(array $post, string $frequency): string
     {
+        $parseDay = static function ($raw, int $default): int|string {
+            $raw = trim((string) $raw);
+            if ($raw === '') {
+                return $default;
+            }
+            if (strtolower($raw) === 'last') {
+                return 'last';
+            }
+
+            $n = (int) $raw;
+
+            return ($n >= 1 && $n <= 31) ? $n : $default;
+        };
+
         $config = match ($frequency) {
-            'weekly'  => ['end_weekday' => 5],
-            'monthly' => ['day' => 31],
-            default   => ['first_end_day' => 15, 'second_end_day' => 31],
+            'weekly' => [
+                'weekday' => (($post['cutoff_weekday'] ?? '') !== '') ? max(0, min(6, (int) $post['cutoff_weekday'])) : 5,
+            ],
+            'monthly' => [
+                'day_of_month' => $parseDay($post['cutoff_day'] ?? '', 31),
+            ],
+            default => [
+                'cutoff_days' => [
+                    $parseDay($post['cutoff_day_1'] ?? '', 15),
+                    $parseDay($post['cutoff_day_2'] ?? '', 31),
+                ],
+            ],
         };
 
         return json_encode($config);
@@ -215,7 +237,7 @@ class CutoffSchedules extends BaseController
             'scope_type'           => $scopeType,
             'scope_id'             => $this->validScopeId($scopeType, $scopeId, $companyId),
             'frequency'            => $frequency,
-            'period_config'        => $this->defaultPeriodConfig($frequency),
+            'period_config'        => $this->buildPeriodConfig($post, $frequency),
             'pay_date_offset_days' => ($post['pay_date_offset_days'] ?? '') !== '' ? (int) $post['pay_date_offset_days'] : 5,
             'reminder_days_before' => ($post['reminder_days_before'] ?? '') !== '' ? (int) $post['reminder_days_before'] : 2,
         ];

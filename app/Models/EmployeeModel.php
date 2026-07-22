@@ -14,7 +14,7 @@ class EmployeeModel extends Model
         // Onboarding/profile enhancements: org structure, pay basis, approval routing.
         'date_of_birth', 'supervisor_id', 'job_level_id', 'employee_rank_id',
         'approval_level', 'basic_pay', 'pay_frequency', 'is_minimum_wage_earner',
-        'work_schedule_id',
+        'work_schedule_id', 'phone', 'address', 'emergency_contact_name', 'emergency_contact_phone',
     ];
     protected $useTimestamps = true;
 
@@ -53,10 +53,21 @@ class EmployeeModel extends Model
     public function findWithDetails(int $id): ?array
     {
         $row = $this->db->table('employees e')
-            ->select('e.*, u.name AS user_name, u.email AS user_email, c.name AS company_name, b.name AS branch_name')
+            ->select("e.*, u.name AS user_name, u.email AS user_email, c.name AS company_name, b.name AS branch_name,
+                      d.name AS department_name, p.title AS position_title, jl.name AS job_level_name,
+                      er.name AS employee_rank_name, ws.name AS work_schedule_name, ap.name AS access_profile_name,
+                      su.name AS supervisor_name")
             ->join('users u', 'u.id = e.user_id')
             ->join('companies c', 'c.id = e.company_id')
             ->join('branches b', 'b.id = e.branch_id', 'left')
+            ->join('departments d', 'd.id = e.department_id', 'left')
+            ->join('positions p', 'p.id = e.position_id', 'left')
+            ->join('job_levels jl', 'jl.id = e.job_level_id', 'left')
+            ->join('employee_ranks er', 'er.id = e.employee_rank_id', 'left')
+            ->join('work_schedules ws', 'ws.id = e.work_schedule_id', 'left')
+            ->join('access_profiles ap', 'ap.id = e.access_profile_id', 'left')
+            ->join('employees se', 'se.id = e.supervisor_id', 'left')
+            ->join('users su', 'su.id = se.user_id', 'left')
             ->where('e.id', $id)
             ->get()->getRowArray();
 

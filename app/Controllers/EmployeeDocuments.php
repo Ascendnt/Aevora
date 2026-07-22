@@ -272,12 +272,38 @@ class EmployeeDocuments extends BaseController
         }
 
         // No uploaded file: this is a generated document — render its saved
-        // content as a clean, printable HTML page (browser print → PDF).
+        // content as a clean, printable HTML page (browser print → PDF), or
+        // as a real downloadable PDF via pdf() below.
         return view('employee_documents/view', [
             'title'    => $doc['title'],
             'active'   => 'employee-mgmt',
             'document' => $doc,
             'employee' => $employee,
         ]);
+    }
+
+    /** Real PDF download of a generated (not uploaded) document's saved content. */
+    public function pdf(int $documentId)
+    {
+        $doc = $this->documents->findWithDetails($documentId);
+        if (! $doc) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        $employee = $this->employeeContext((int) $doc['employee_id']);
+        if (! $employee) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+        $this->assertOwnsCompany((int) $employee['company_id']);
+
+        if (! empty($doc['file_path'])) {
+            return redirect()->to('/documents/' . $documentId . '/view');
+        }
+
+        $writer = new \App\Libraries\PdfWriter($doc['title']);
+        $writer->addText((string) $doc['content']);
+
+        $filename = preg_replace('/[^A-Za-z0-9 _-]/', '', $doc['title']) . '.pdf';
+        $writer->download($filename !== '' ? $filename : 'document.pdf');
     }
 }

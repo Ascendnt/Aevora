@@ -135,6 +135,17 @@ class Companies extends BaseController
                 $data[$field] = null;
             }
         }
+
+        // max_approval_levels is NOT NULL (DB default 5) — an explicit NULL would violate that,
+        // so a blank field falls back to 5 here instead of null.
+        if (isset($data['max_approval_levels']) && (string) $data['max_approval_levels'] === '') {
+            $data['max_approval_levels'] = 5;
+        }
+
+        if (isset($data['country_code'])) {
+            $data['country_code'] = strtoupper(trim((string) $data['country_code'])) ?: null;
+        }
+
         return $data;
     }
 

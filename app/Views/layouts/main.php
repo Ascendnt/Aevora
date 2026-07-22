@@ -39,6 +39,9 @@ $brand  = hq_company_name();
     <nav class="nav" aria-label="Main navigation">
       <a href="<?= site_url('dashboard') ?>" class="<?= $active === 'dashboard' ? 'active' : '' ?>"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</a>
       <a href="<?= site_url('notifications') ?>" class="<?= $active === 'notifications' ? 'active' : '' ?>"><i class="ti ti-bell" aria-hidden="true"></i>Notifications</a>
+      <?php if (! is_superadmin() && current_employee() !== null): ?>
+        <a href="<?= site_url('my-profile') ?>" class="<?= $active === 'my-profile' ? 'active' : '' ?>"><i class="ti ti-user-circle" aria-hidden="true"></i>My profile</a>
+      <?php endif; ?>
       <?php if (can_access(Modules::EMPLOYEES)): ?>
         <a href="<?= site_url('employees') ?>" class="<?= $active === 'employees' ? 'active' : '' ?>"><i class="ti ti-users" aria-hidden="true"></i>Employees</a>
       <?php endif; ?>
@@ -115,20 +118,6 @@ $brand  = hq_company_name();
         else { root.setAttribute('data-theme', 'dark'); document.cookie = 'hris_theme=dark;path=/;max-age=31536000'; }
         sync();
       });
-    })();
-    </script>
-    <script>
-    (function () {
-      var pm = document.getElementById('profileMenu');
-      if (!pm) return;
-      var btn = document.getElementById('profileBtn');
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var open = pm.classList.toggle('open');
-        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      });
-      document.addEventListener('click', function () { pm.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); });
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { pm.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); } });
     })();
     </script>
     <?= $this->include('partials/assistant') ?>

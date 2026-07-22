@@ -7,6 +7,7 @@ $typeLabels = [
     'official_business' => 'Official business',
     'schedule_change'   => 'Schedule change',
     'time_adjustment'   => 'Time adjustment',
+    'overtime'          => 'Overtime',
 ];
 
 $fmtDates = static function (array $dates): string {
@@ -58,6 +59,8 @@ $fmtDates = static function (array $dates): string {
                 <?= esc($a['requested_schedule_name'] ?? '—') ?>
               <?php elseif (in_array($a['filing_type'], ['official_business', 'time_adjustment'], true)): ?>
                 <?= esc(trim(($a['requested_time_in'] ?? '') . ' – ' . ($a['requested_time_out'] ?? ''), ' –')) ?: '—' ?>
+              <?php elseif ($a['filing_type'] === 'overtime'): ?>
+                <?= $a['overtime_hours'] !== null ? esc($a['overtime_hours']) . ' hr(s)' : '—' ?>
               <?php endif; ?>
               <?php if (! empty($a['reason'])): ?>
                 <div class="muted"><?= esc($a['reason']) ?></div>

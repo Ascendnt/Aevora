@@ -1,7 +1,7 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<?php $selectedType = old('filing_type', 'leave'); ?>
+<?php $selectedType = old('filing_type', (string) (request()->getGet('filing_type') ?: 'leave')); ?>
 
 <div class="page-head">
   <div>
@@ -41,6 +41,11 @@
         <input type="radio" name="filing_type" value="time_adjustment" <?= $selectedType === 'time_adjustment' ? 'checked' : '' ?>>
         Time adjustment
         <small>Correct a missed or wrong time in/out</small>
+      </label>
+      <label>
+        <input type="radio" name="filing_type" value="overtime" <?= $selectedType === 'overtime' ? 'checked' : '' ?>>
+        Overtime
+        <small>Request approval for hours worked beyond your schedule</small>
       </label>
     </div>
 
@@ -94,6 +99,16 @@
         <div>
           <label for="requested_time_out">Time out</label>
           <input type="time" id="requested_time_out" name="requested_time_out" value="<?= esc(old('requested_time_out')) ?>">
+        </div>
+      </div>
+    </div>
+
+    <div data-section="overtime">
+      <p class="section-label">Overtime details</p>
+      <div class="form-grid">
+        <div>
+          <label for="overtime_hours">Hours *</label>
+          <input type="number" id="overtime_hours" name="overtime_hours" step="0.25" min="0" max="24" value="<?= esc(old('overtime_hours')) ?>">
         </div>
       </div>
     </div>
@@ -167,6 +182,7 @@ textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px 
   var sections = Array.prototype.slice.call(document.querySelectorAll('[data-section]'));
   var leaveTypeSelect = document.getElementById('leave_type_id');
   var scheduleSelect = document.getElementById('requested_work_schedule_id');
+  var overtimeHoursInput = document.getElementById('overtime_hours');
   var form = document.getElementById('filingForm');
 
   function currentType() {
@@ -188,6 +204,7 @@ textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px 
 
     if (leaveTypeSelect) leaveTypeSelect.required = (type === 'leave');
     if (scheduleSelect) scheduleSelect.required = (type === 'schedule_change');
+    if (overtimeHoursInput) overtimeHoursInput.required = (type === 'overtime');
   }
 
   typeInputs.forEach(function (input) {

@@ -21,9 +21,18 @@ $statusBadge = static function (?string $status): string {
     <p class="sub">Clock in/out, and review your recent attendance</p>
   </div>
   <div style="display:flex; gap:8px; flex-wrap:wrap;">
-    <a class="btn" href="<?= site_url('work-schedules') ?>"><i class="ti ti-calendar-time" aria-hidden="true"></i>Work schedules</a>
-    <a class="btn" href="<?= site_url('holidays') ?>"><i class="ti ti-calendar-star" aria-hidden="true"></i>Holidays</a>
-    <a class="btn" href="<?= site_url('cutoff-schedules') ?>"><i class="ti ti-calendar-cog" aria-hidden="true"></i>Cutoff schedules</a>
+    <?php if (can_access_sub('time_attendance.schedules', \App\Constants\Modules::TIME_ATTENDANCE)): ?>
+      <a class="btn" href="<?= site_url('work-schedules') ?>"><i class="ti ti-calendar-time" aria-hidden="true"></i>Work schedules</a>
+    <?php endif; ?>
+    <?php if (can_access_sub('time_attendance.holidays', \App\Constants\Modules::TIME_ATTENDANCE)): ?>
+      <a class="btn" href="<?= site_url('holidays') ?>"><i class="ti ti-calendar-star" aria-hidden="true"></i>Holidays</a>
+    <?php endif; ?>
+    <?php if (can_access_sub('time_attendance.cutoff', \App\Constants\Modules::TIME_ATTENDANCE)): ?>
+      <a class="btn" href="<?= site_url('cutoff-schedules') ?>"><i class="ti ti-calendar-cog" aria-hidden="true"></i>Cutoff schedules</a>
+    <?php endif; ?>
+    <?php if (can_access_sub('time_attendance.policies', \App\Constants\Modules::TIME_ATTENDANCE)): ?>
+      <a class="btn" href="<?= site_url('attendance-policies') ?>"><i class="ti ti-shield-check" aria-hidden="true"></i>Policies</a>
+    <?php endif; ?>
   </div>
 </div>
 
@@ -49,6 +58,9 @@ $statusBadge = static function (?string $status): string {
         </button>
       </form>
     </div>
+    <?php if (! empty($todayLog['timezone'])): ?>
+      <p class="muted" style="margin:8px 0 0;">Detected timezone: <?= esc($todayLog['timezone']) ?> (from your connection). <a href="<?= site_url('filings/new?filing_type=time_adjustment') ?>">This wrong?</a></p>
+    <?php endif; ?>
   </div>
 
   <p class="section-label"><?= esc($periodLabel) ?></p>

@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aevora — HR that moves as one</title>
+<?php $brand = hq_company_name(); ?>
+<title><?= esc($brand) ?> — HR that moves as one</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Instrument+Sans:wght@400;500;600&family=Space+Grotesque&display=swap" rel="stylesheet">
@@ -191,12 +192,12 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
           <circle cx="20" cy="4" r="1.6" fill="var(--clay)"/>
         </svg>
       </span>
-      Aevora
+      <?= esc($brand) ?>
     </a>
     <div class="nav-links">
       <a href="#platform">Platform</a>
       <a href="#how">How it works</a>
-      <a href="#story">Why Aevora</a>
+      <a href="#story">Why <?= esc($brand) ?></a>
       <a href="<?= site_url('login') ?>" class="login-btn">
         Log in
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -214,7 +215,7 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
         <span class="ln"><i>as <em>one</em>,</i></span>
         <span class="ln"><i>not one <span class="accent">chore</span>.</i></span>
       </h1>
-      <p class="hero-sub">Aevora brings your companies, branches, people, and payroll into one calm workspace built for teams who'd rather grow than chase paperwork.</p>
+      <p class="hero-sub"><?= esc($brand) ?> brings your companies, branches, people, and payroll into one calm workspace built for teams who'd rather grow than chase paperwork.</p>
       <div class="hero-cta">
         <a href="<?= site_url('login') ?>" class="btn-primary" data-magnetic>
           Enter workspace
@@ -263,7 +264,7 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
       <span class="h2-num">01</span>
       <div>
         <h2>Everything your people need, <em>gathered in one place.</em></h2>
-        <p class="lead">No more scattered spreadsheets and lost employee files. Aevora keeps the whole organisation every company, branch, and person in one considered system.</p>
+        <p class="lead">No more scattered spreadsheets and lost employee files. <?= esc($brand) ?> keeps the whole organisation every company, branch, and person in one considered system.</p>
       </div>
     </div>
     <div class="pillars">
@@ -309,7 +310,7 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
         <div class="s-n">ii.</div>
         <div class="s-ic"><svg viewBox="0 0 46 46" fill="none"><path d="M9 35V15l14-8 14 8v20" stroke="var(--sage-deep)" stroke-width="2" stroke-linejoin="round"/><rect x="18" y="24" width="10" height="11" stroke="var(--clay)" stroke-width="2"/></svg></div>
         <h4>Map the branches</h4>
-        <p>Set HQ, add every location, and Aevora keeps a single headquarters honest.</p>
+        <p>Set HQ, add every location, and <?= esc($brand) ?> keeps a single headquarters honest.</p>
       </div>
       <div class="step reveal">
         <svg class="connector" viewBox="0 0 16 24" fill="none"><path d="M2 12h12M9 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -352,7 +353,7 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
 <section class="cta-final">
   <div class="wrap reveal">
     <svg class="cta-star" viewBox="0 0 34 34" fill="none"><path d="M17 2l3 11 11 3-11 3-3 11-3-11-11-3 11-3 3-11Z" fill="currentColor"/></svg>
-    <h2 style="text-align:center;">Gather your team.<br><em>Rise with Aevora.</em></h2>
+    <h2 style="text-align:center;">Gather your team.<br><em>Rise with <?= esc($brand) ?>.</em></h2>
     <p class="lead" style="text-align:center;">Sign in to the workspace and watch your whole organisation come together.</p>
     <a href="<?= site_url('login') ?>" class="btn-primary" data-magnetic>
       Enter workspace
@@ -368,18 +369,18 @@ footer{border-top:1px solid var(--line);padding:60px 0 40px;}
       <div class="foot-brand">
         <a href="/" class="brand">
           <span class="mark"><svg viewBox="0 0 40 40" fill="none"><path d="M20 8C15 12 12.5 15.5 12.5 20a7.5 7.5 0 0 0 15 0C27.5 15.5 25 12 20 8Z" fill="var(--sage)"/><path d="M20 27V17" stroke="var(--sage-deep)" stroke-width="1.7" stroke-linecap="round"/><circle cx="20" cy="6" r="1.6" fill="var(--clay)"/></svg></span>
-          Aevora
+          <?= esc($brand) ?>
         </a>
         <p>People-first HR, built for teams who'd rather grow than chase paperwork.</p>
       </div>
       <div class="foot-cols">
         <div class="foot-col"><h5>Platform</h5><a href="#platform">Company settings</a><a href="#platform">People &amp; org</a><a href="#platform">Payroll &amp; time</a><a href="#how">How it works</a></div>
-        <div class="foot-col"><h5>Workspace</h5><a href="<?= site_url('login') ?>">Log in</a><a href="#story">Why Aevora</a></div>
+        <div class="foot-col"><h5>Workspace</h5><a href="<?= site_url('login') ?>">Log in</a><a href="#story">Why <?= esc($brand) ?></a></div>
       </div>
     </div>
     <div class="foot-base">
-      <span>© <?= date('Y') ?> Aevora · HR that moves as one</span>
-      <span style="font-family:var(--mono);">aevora · <em>rise, together</em></span>
+      <span>© <?= date('Y') ?> <?= esc($brand) ?> · HR that moves as one</span>
+      <span style="font-family:var(--mono);"><?= esc(strtolower($brand)) ?> · <em>rise, together</em></span>
     </div>
   </div>
 </footer>

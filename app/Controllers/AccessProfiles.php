@@ -53,6 +53,7 @@ class AccessProfiles extends BaseController
             'profile'    => null,
             'checked'    => [],
             'modules'    => Modules::all(),
+            'subModules' => Modules::subModules(),
             'assignedTo' => [],
         ]);
     }
@@ -73,7 +74,7 @@ class AccessProfiles extends BaseController
         }
 
         $id      = $this->profiles->insert(['name' => $name], true);
-        $modules = array_intersect((array) $this->request->getPost('modules'), Modules::keys());
+        $modules = array_filter((array) $this->request->getPost('modules'), static fn ($k) => Modules::isValidAny((string) $k));
         $this->profiles->setModules((int) $id, $modules);
 
         return redirect()->to('/access-profiles')->with('success', 'Access profile added.');
@@ -120,7 +121,7 @@ class AccessProfiles extends BaseController
         }
 
         $this->profiles->update($id, ['name' => $name]);
-        $modules = array_intersect((array) $this->request->getPost('modules'), Modules::keys());
+        $modules = array_filter((array) $this->request->getPost('modules'), static fn ($k) => Modules::isValidAny((string) $k));
         $this->profiles->setModules($id, $modules);
 
         return redirect()->to('/access-profiles')->with('success', 'Access profile updated.');

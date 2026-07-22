@@ -31,8 +31,8 @@ class InitialSeeder extends Seeder
 
         // Demo HQ company
         $this->db->table('companies')->insert([
-            'name'         => 'Aevora',
-            'legal_name'   => 'Aevora Corporation, Inc.',
+            'name'         => 'Aveora',
+            'legal_name'   => 'Aveora Corporation, Inc.',
             'industry'     => 'Retail',
             'email'        => 'hello@aevora.ph',
             'phone'        => '+63 2 8123 4567',

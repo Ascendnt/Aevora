@@ -2,6 +2,7 @@
 
 namespace App\Libraries;
 
+use App\Models\AttendancePolicyModel;
 use App\Models\CountryTaxBracketModel;
 use App\Models\CountryTaxRuleModel;
 use App\Models\EmployeeBenefitModel;
@@ -172,15 +173,30 @@ class PayrollEngine
         foreach ($this->datesBetween($periodStart, $periodEnd) as $date) {
             $detail = ['date' => $date];
 
-            $holiday = $this->db->table('holidays')
+            // Company-wide holidays (national/regional/local) apply to everyone; branch/employee-scoped
+            // holidays only apply to that specific branch or employee, never the whole company.
+            $holidayQuery = $this->db->table('holidays')
                 ->where('company_id', $employee['company_id'])->where('date', $date)
-                ->get()->getRowArray();
+                ->groupStart()->whereIn('scope_type', ['national', 'regional', 'local']);
+            if (! empty($employee['branch_id'])) {
+                $holidayQuery->orGroupStart()->where('scope_type', 'branch')->where('branch_id', $employee['branch_id'])->groupEnd();
+            }
+            $holidayQuery->orGroupStart()->where('scope_type', 'employee')->where('employee_id', $employeeId)->groupEnd();
+            $holiday = $holidayQuery->groupEnd()->get()->getRowArray();
 
             if ($holiday) {
-                $detail['classification'] = 'holiday';
-                $detail['note']           = $holiday['name'];
-                $paidDayEquivalents += 1;
-                $dayDetails[]        = $detail;
+                $forfeited = $this->holidayPayForfeited($employee, $employeeId, $date);
+
+                $detail['classification'] = $forfeited ? 'absent' : 'holiday';
+                $detail['note']           = $holiday['name'] . ($forfeited ? ' (pay forfeited — unexcused absence adjacent to this holiday)' : '');
+
+                if ($forfeited) {
+                    $absenceDays++;
+                } else {
+                    $paidDayEquivalents += 1;
+                }
+
+                $dayDetails[] = $detail;
                 continue;
             }
 
@@ -313,6 +329,61 @@ class PayrollEngine
             'paidDayEquivalents' => $paidDayEquivalents,
             'dayDetails'         => $dayDetails,
         ];
+    }
+
+    /**
+     * Whether this holiday's pay is forfeited under the company's attendance
+     * policy (if it has one) — true only when the policy requires attendance
+     * adjacent to a holiday AND the employee was unexcused-absent on that
+     * adjacent day. Simplification: "absent" here means no attendance log
+     * and no approved leave/official_business filing for that date; it does
+     * not itself re-check whether that adjacent date was a scheduled rest
+     * day or another holiday.
+     */
+    private function holidayPayForfeited(array $employee, int $employeeId, string $date): bool
+    {
+        $policy = (new AttendancePolicyModel())->forCompany((int) $employee['company_id']);
+        if (! $policy) {
+            return false;
+        }
+
+        $checkBefore = db_bool($policy['absent_before_holiday_forfeits_pay'] ?? false);
+        $checkAfter  = db_bool($policy['absent_after_holiday_forfeits_pay'] ?? false);
+
+        if (! $checkBefore && ! $checkAfter) {
+            return false;
+        }
+
+        $day = new DateTimeImmutable($date);
+
+        if ($checkBefore && $this->wasAbsentOn($employeeId, $day->modify('-1 day')->format('Y-m-d'))) {
+            return true;
+        }
+
+        return $checkAfter && $this->wasAbsentOn($employeeId, $day->modify('+1 day')->format('Y-m-d'));
+    }
+
+    /** No attendance log with a time in, and no approved leave/OB filing, for this employee on this date. */
+    private function wasAbsentOn(int $employeeId, string $date): bool
+    {
+        $log = $this->db->table('attendance_logs')
+            ->where('employee_id', $employeeId)->where('log_date', $date)
+            ->get()->getRowArray();
+
+        if ($log && ! empty($log['time_in'])) {
+            return false;
+        }
+
+        $excused = $this->db->table('filing_dates fd')
+            ->select('f.filing_type')
+            ->join('filings f', 'f.id = fd.filing_id')
+            ->where('fd.date', $date)
+            ->where('f.employee_id', $employeeId)
+            ->where('f.status', 'approved')
+            ->whereIn('f.filing_type', ['leave', 'official_business'])
+            ->get()->getRowArray();
+
+        return ! $excused;
     }
 
     /** @return array|null The first leave/official_business filing covering the date, if any. */

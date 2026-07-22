@@ -122,6 +122,14 @@ class Filings extends BaseController
             $data['requested_time_out'] = trim((string) ($post['requested_time_out'] ?? '')) ?: null;
         }
 
+        if ($filingType === 'overtime') {
+            $hours = (string) ($post['overtime_hours'] ?? '');
+            if ($hours === '' || ! is_numeric($hours) || (float) $hours <= 0) {
+                return redirect()->back()->withInput()->with('error', 'Please enter how many overtime hours you are requesting.');
+            }
+            $data['overtime_hours'] = (float) $hours;
+        }
+
         $data['approver_employee_id'] = $employee['supervisor_id'] ?: null;
 
         $filingId = $this->filings->createFiling($data, $dates);

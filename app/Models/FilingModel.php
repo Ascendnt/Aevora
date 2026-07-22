@@ -16,18 +16,18 @@ class FilingModel extends Model
     protected $primaryKey    = 'id';
     protected $allowedFields = [
         'employee_id', 'filing_type', 'leave_type_id', 'requested_time_in', 'requested_time_out',
-        'requested_work_schedule_id', 'reason', 'days_count', 'status', 'approver_employee_id',
+        'requested_work_schedule_id', 'overtime_hours', 'reason', 'days_count', 'status', 'approver_employee_id',
         'decided_by_user_id', 'decision_note', 'decided_at', 'filed_at',
     ];
     protected $useTimestamps = true;
 
     protected $validationRules = [
         'employee_id' => 'required|is_natural_no_zero',
-        'filing_type' => 'required|in_list[leave,official_business,schedule_change,time_adjustment]',
+        'filing_type' => 'required|in_list[leave,official_business,schedule_change,time_adjustment,overtime]',
         'status'      => 'permit_empty|in_list[pending,approved,rejected,cancelled]',
     ];
 
-    public const TYPES = ['leave', 'official_business', 'schedule_change', 'time_adjustment'];
+    public const TYPES = ['leave', 'official_business', 'schedule_change', 'time_adjustment', 'overtime'];
 
     /**
      * Inserts a filing and its filing_dates rows together in one transaction.

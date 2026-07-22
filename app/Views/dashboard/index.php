@@ -6,6 +6,7 @@ $name     = session()->get('user_name') ?? 'there';
 $initials = strtoupper(implode('', array_map(static fn ($p) => $p[0] ?? '', array_slice(explode(' ', $name), 0, 2))));
 $hour     = (int) date('G');
 $greeting = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good evening');
+$hasProfile = ! is_superadmin() && current_employee() !== null;
 ?>
 
 <div class="page-head">
@@ -13,27 +14,23 @@ $greeting = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good
     <h1><?= esc($greeting) ?>, <?= esc(explode(' ', $name)[0]) ?></h1>
     <p class="sub"><?= esc($companyLabel) ?></p>
   </div>
-  <div class="profile" id="profileMenu">
-    <button type="button" class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+  <?php if ($hasProfile): ?>
+    <a href="<?= site_url('my-profile') ?>" class="profile-btn" style="text-decoration:none;">
       <div class="who">
         <div class="nm"><?= esc($name) ?></div>
         <div class="rl"><?= esc($roleLabel) ?></div>
       </div>
       <div class="avatar"><?= esc($initials) ?></div>
-      <i class="ti ti-chevron-down chev" aria-hidden="true"></i>
-    </button>
-    <div class="profile-menu" role="menu">
-      <div class="pm-head">
+    </a>
+  <?php else: ?>
+    <div class="profile-btn" style="cursor:default;">
+      <div class="who">
         <div class="nm"><?= esc($name) ?></div>
-        <div class="em"><?= esc(session()->get('user_email') ?? 'admin@hris.test') ?></div>
+        <div class="rl"><?= esc($roleLabel) ?></div>
       </div>
-      <?php if (can_access(\App\Constants\Modules::COMPANY_SETTINGS)): ?>
-        <a href="<?= site_url('companies') ?>" role="menuitem"><i class="ti ti-building" aria-hidden="true"></i> Company settings</a>
-      <?php endif; ?>
-      <a href="<?= site_url('dashboard') ?>" role="menuitem"><i class="ti ti-user-cog" aria-hidden="true"></i> My profile</a>
-      <a href="<?= site_url('logout') ?>" class="pm-danger" role="menuitem"><i class="ti ti-logout" aria-hidden="true"></i> Sign out</a>
+      <div class="avatar"><?= esc($initials) ?></div>
     </div>
-  </div>
+  <?php endif; ?>
 </div>
 
 <div class="stat-grid">
@@ -46,52 +43,54 @@ $greeting = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good
     <p class="value"><?= esc($branchCount) ?></p>
   </div>
   <div class="stat">
-    <p class="label">On leave today</p>
-    <p class="value"><?= esc($onLeaveToday) ?></p>
+    <p class="label">Clocked in today</p>
+    <p class="value"><?= esc($attendanceToday['clockedIn']) ?> <span style="font-size:0.5em; font-weight:500; color:var(--text-secondary);">/ <?= esc($attendanceToday['active']) ?></span></p>
   </div>
   <div class="stat">
-    <p class="label">Payroll run</p>
-    <p class="value"><?= esc($payrollRun) ?></p>
+    <p class="label">Turnover (YTD)</p>
+    <p class="value"><?= esc($turnoverYtd['rate']) ?>%</p>
   </div>
 </div>
 
-<?php
-use App\Constants\Modules;
-
-$showCompanySettings   = can_access(Modules::COMPANY_SETTINGS);
-$showEmployeeMgmt      = can_access(Modules::EMPLOYEE_MANAGEMENT);
-$showEmployeesDirectory = ! $showEmployeeMgmt && can_access(Modules::EMPLOYEES);
-?>
-<?php if ($showCompanySettings || $showEmployeeMgmt || $showEmployeesDirectory): ?>
-  <p class="section-label">Quick settings</p>
-  <div class="card-grid">
-    <?php if ($showCompanySettings): ?>
-      <a class="card-link" href="<?= site_url('companies') ?>">
-        <i class="ti ti-sitemap" aria-hidden="true"></i>
+<div class="card-grid" style="margin-top:24px;">
+  <div class="form-card" style="max-width:none;">
+    <p class="section-label" style="margin-top:0;">Attendance today</p>
+    <?php if ($attendanceToday['active'] === 0): ?>
+      <p class="muted">No active employees yet.</p>
+    <?php else: ?>
+      <div style="display:flex; gap:20px; flex-wrap:wrap;">
         <div>
-          <p class="t">Company settings</p>
-          <p class="d">Companies, branches, org structure, pay schedules<span class="sep"></span><?= esc($companyCount) ?> compan<?= $companyCount === 1 ? 'y' : 'ies' ?></p>
+          <p class="muted" style="margin:0 0 2px;">Clocked in</p>
+          <p style="margin:0; font-weight:600; font-size:1.1em;"><?= esc($attendanceToday['clockedIn']) ?></p>
         </div>
-      </a>
-    <?php endif; ?>
-    <?php if ($showEmployeeMgmt): ?>
-      <a class="card-link" href="<?= site_url('employee-management') ?>">
-        <i class="ti ti-id-badge-2" aria-hidden="true"></i>
         <div>
-          <p class="t">Employee management</p>
-          <p class="d">Add employees, assign access, reset passwords<span class="sep"></span><?= esc($totalEmployees) ?> employee<?= $totalEmployees === 1 ? '' : 's' ?></p>
+          <p class="muted" style="margin:0 0 2px;">Not yet in</p>
+          <p style="margin:0; font-weight:600; font-size:1.1em;"><?= esc($attendanceToday['notYet']) ?></p>
         </div>
-      </a>
-    <?php elseif ($showEmployeesDirectory): ?>
-      <a class="card-link" href="<?= site_url('employees') ?>">
-        <i class="ti ti-id-badge-2" aria-hidden="true"></i>
         <div>
-          <p class="t">Employees</p>
-          <p class="d">Directory<span class="sep"></span><?= esc($totalEmployees) ?> employee<?= $totalEmployees === 1 ? '' : 's' ?></p>
+          <p class="muted" style="margin:0 0 2px;">Late (after 9am)</p>
+          <p style="margin:0; font-weight:600; font-size:1.1em;"><?= esc($attendanceToday['late']) ?></p>
         </div>
-      </a>
+      </div>
+      <p class="muted" style="margin-top:10px;"><a href="<?= site_url('attendance') ?>">View time &amp; attendance &rarr;</a></p>
     <?php endif; ?>
   </div>
-<?php endif; ?>
+
+  <div class="form-card" style="max-width:none;">
+    <p class="section-label" style="margin-top:0;">Birthdays this month</p>
+    <?php if (empty($birthdaysThisMonth)): ?>
+      <p class="muted">No birthdays on file for this month.</p>
+    <?php else: ?>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <?php foreach ($birthdaysThisMonth as $b): ?>
+          <li style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px dashed var(--border);">
+            <span><?= esc($b['user_name']) ?></span>
+            <span class="muted"><?= esc(date('M j', strtotime($b['date_of_birth']))) ?></span>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </div>
+</div>
 
 <?= $this->endSection() ?>

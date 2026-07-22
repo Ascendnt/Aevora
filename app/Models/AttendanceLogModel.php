@@ -8,7 +8,7 @@ class AttendanceLogModel extends Model
 {
     protected $table         = 'attendance_logs';
     protected $primaryKey    = 'id';
-    protected $allowedFields = ['employee_id', 'log_date', 'time_in', 'time_out', 'source'];
+    protected $allowedFields = ['employee_id', 'log_date', 'time_in', 'time_out', 'source', 'timezone'];
     protected $useTimestamps = true;
 
     protected $validationRules = [
