@@ -48,7 +48,7 @@ CREATE DATABASE hris;
 
 ### 2. Configure the connection
 
-Open `.env` in the project root and set your PostgreSQL credentials:
+Create `.env` in the project root and set your PostgreSQL credentials:
 
 ```
 database.default.hostname = localhost
