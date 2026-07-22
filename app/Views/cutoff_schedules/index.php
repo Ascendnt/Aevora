@@ -29,17 +29,16 @@ $freqLabel = static fn (string $f) => match ($f) {
   </form>
 <?php endif; ?>
 
-<?php if (! $filter): ?>
-  <div class="empty">Choose a company above to see its cutoff schedules.</div>
-<?php elseif (empty($schedules)): ?>
+<?php if (empty($schedules)): ?>
   <div class="empty">
-    No cutoff schedules yet. <a href="<?= site_url('cutoff-schedules/new?company=' . $filter) ?>">Add one</a> to set pay period and reminder timing.
+    No cutoff schedules yet. <a href="<?= site_url('cutoff-schedules/new' . ($filter ? '?company=' . $filter : '')) ?>">Add one</a> to set pay period and reminder timing.
   </div>
 <?php else: ?>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
+          <?php if (count($companies) > 1): ?><th>Company</th><?php endif; ?>
           <th>Scope</th>
           <th>Frequency</th>
           <th>Pay date offset</th>
@@ -50,6 +49,7 @@ $freqLabel = static fn (string $f) => match ($f) {
       <tbody>
         <?php foreach ($schedules as $s): ?>
           <tr>
+            <?php if (count($companies) > 1): ?><td><?= esc($s['company_name']) ?></td><?php endif; ?>
             <td><?= esc(ucfirst($s['scope_type'])) ?><div class="muted"><?= esc($s['scope_label']) ?></div></td>
             <td><?= esc($freqLabel($s['frequency'])) ?></td>
             <td><?= esc($s['pay_date_offset_days']) ?> day(s) after period end</td>
