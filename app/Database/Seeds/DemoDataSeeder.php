@@ -21,10 +21,22 @@ class DemoDataSeeder extends Seeder
 
     public function run(): void
     {
-        if ($this->db->table('companies')->where('name', self::DEMO_COMPANY_NAME)->countAllResults() > 0) {
-            echo "Demo data already seeded — skipping.\n";
+        $existing = $this->db->table('companies')->where('name', self::DEMO_COMPANY_NAME)->get()->getRowArray();
 
-            return;
+        if ($existing) {
+            $employeeCount = $this->db->table('employees')->where('company_id', $existing['id'])->countAllResults();
+
+            if ($employeeCount >= 5) {
+                echo "Demo data already seeded — skipping.\n";
+
+                return;
+            }
+
+            // A previous run got partway through and failed (e.g. a schema mismatch) before
+            // finishing all 5 employees — every dependent row cascades off company_id, so
+            // removing the company cleans up the partial data and this reseeds from scratch.
+            echo "Found incomplete demo data ({$employeeCount} employee(s)) — removing and reseeding.\n";
+            $this->db->table('companies')->where('id', $existing['id'])->delete();
         }
 
         $now = date('Y-m-d H:i:s');
@@ -185,14 +197,15 @@ class DemoDataSeeder extends Seeder
     /** @return array{0: int, 1: int} [dayShift, executive] */
     private function seedSchedules(int $companyId, string $now): array
     {
+        // time_in/time_out are VARCHAR(5) ("HH:MM") — matching what an <input type="time"> submits.
         $this->db->table('work_schedules')->insert([
-            'company_id' => $companyId, 'name' => 'Day Shift', 'time_in' => '08:00:00', 'time_out' => '17:00:00',
+            'company_id' => $companyId, 'name' => 'Day Shift', 'time_in' => '08:00', 'time_out' => '17:00',
             'grace_minutes' => 10, 'break_minutes' => 60, 'schedule_type' => 'fixed', 'created_at' => $now, 'updated_at' => $now,
         ]);
         $day = (int) $this->db->insertID();
 
         $this->db->table('work_schedules')->insert([
-            'company_id' => $companyId, 'name' => 'Executive Schedule', 'time_in' => '09:00:00', 'time_out' => '18:00:00',
+            'company_id' => $companyId, 'name' => 'Executive Schedule', 'time_in' => '09:00', 'time_out' => '18:00',
             'grace_minutes' => 15, 'break_minutes' => 60, 'schedule_type' => 'executive', 'created_at' => $now, 'updated_at' => $now,
         ]);
         $exec = (int) $this->db->insertID();
@@ -331,7 +344,7 @@ class DemoDataSeeder extends Seeder
     {
         $this->db->table('filings')->insert([
             'employee_id' => $employeeId, 'filing_type' => 'official_business',
-            'requested_time_in' => '09:00:00', 'requested_time_out' => '16:00:00',
+            'requested_time_in' => '09:00', 'requested_time_out' => '16:00',
             'status' => 'pending', 'approver_employee_id' => $approverId,
             'reason' => 'Supplier site visit', 'filed_at' => date('Y-m-d H:i:s', strtotime('-2 days')),
             'created_at' => $now, 'updated_at' => $now,
