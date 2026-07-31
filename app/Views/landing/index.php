@@ -5,462 +5,326 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php $brand = hq_company_name(); ?>
 <title><?= esc($brand) ?> — HR that moves as one</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Instrument+Sans:wght@400;500;600&family=Space+Grotesque&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#f3efe4; --bg2:#ece7d8; --ink:#242a20; --ink-soft:#5c6353; --ink-mute:#8b917f;
-  --sage:#6f8763; --sage-deep:#4f6446; --sage-glow:#a7c095; --cream:#fffdf7;
-  --clay:#bb6a44; --clay-soft:#f0dccf; --gold:#c99a34; --line:#ddd8c7; --aurora:#8fb3a0;
-  --serif:'Fraunces',Georgia,serif; --sans:'Instrument Sans',sans-serif; --mono:'Space Grotesque',monospace;
-  --e:cubic-bezier(.6,.05,.15,1);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:var(--sans);background:var(--bg);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
-a{color:inherit;text-decoration:none;}
-::selection{background:var(--sage);color:var(--cream);}
+<?= $this->include('partials/head_assets') ?>
 
-/* animated aurora atmosphere */
-.aurora-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
-.aurora-bg span{position:absolute;border-radius:50%;filter:blur(70px);opacity:.32;mix-blend-mode:multiply;}
-.aurora-bg .a1{width:640px;height:640px;background:var(--sage-glow);top:-220px;left:-140px;animation:drift1 20s ease-in-out infinite;}
-.aurora-bg .a2{width:520px;height:520px;background:var(--clay-soft);top:-120px;right:-120px;animation:drift2 24s ease-in-out infinite;}
-.aurora-bg .a3{width:440px;height:440px;background:var(--aurora);bottom:-180px;left:34%;animation:drift3 28s ease-in-out infinite;opacity:.2;}
-@keyframes drift1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(60px,50px) scale(1.1);}}
-@keyframes drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-50px,40px) scale(1.08);}}
-@keyframes drift3{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(40px,-40px) scale(1.12);}}
+<style type="text/tailwindcss">
+  @layer utilities {
+    .wrap { @apply relative z-[1] max-w-[1200px] mx-auto px-8; }
+  }
+  @keyframes ln-rise { to { transform: translateY(0); } }
+  @keyframes soft-in { to { opacity: 1; transform: none; } }
+  @keyframes draw     { to { stroke-dashoffset: 0; } }
+  @keyframes marq     { to { transform: translateX(-50%); } }
+  @keyframes bob      { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-9px); } }
+  @keyframes twinkle  { 0%,100%{ opacity:.5; transform: scale(.9) rotate(0); } 50%{ opacity:1; transform: scale(1.1) rotate(18deg); } }
 
-.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 32px;}
-
-/* ---------- NAV ---------- */
-nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(12px);background:color-mix(in srgb,var(--bg) 80%,transparent);border-bottom:1px solid transparent;transition:border-color .3s;}
-nav.scrolled{border-color:var(--line);}
-.nav-in{max-width:1200px;margin:0 auto;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
-.brand{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-weight:600;font-size:23px;letter-spacing:-.015em;}
-.brand .mark{width:38px;height:38px;}
-.nav-links{display:flex;align-items:center;gap:34px;}
-.nav-links a{font-size:14.5px;color:var(--ink-soft);position:relative;transition:color .2s;}
-.nav-links a:not(.login-btn)::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:1.5px;background:var(--sage);transition:width .25s var(--e);}
-.nav-links a:not(.login-btn):hover{color:var(--ink);}
-.nav-links a:not(.login-btn):hover::after{width:100%;}
-.login-btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--cream)!important;padding:10px 20px;border-radius:100px;font-weight:500;transition:transform .18s var(--e),background .2s;}
-.login-btn:hover{background:var(--sage-deep);transform:translateY(-2px);}
-.login-btn svg{transition:transform .25s var(--e);}
-.login-btn:hover svg{transform:translateX(3px);}
-
-/* ---------- HERO ---------- */
-.hero{padding:70px 0 40px;position:relative;}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;}
-h1.hero-h{font-family:var(--serif);font-weight:500;font-size:clamp(44px,6.2vw,78px);line-height:1.0;letter-spacing:-.028em;}
-h1.hero-h .ln{display:block;overflow:hidden;padding-bottom:2px;}
-h1.hero-h .ln i{display:inline-block;font-style:normal;transform:translateY(112%);animation:rise .95s var(--e) forwards;}
-h1.hero-h .ln:nth-child(1) i{animation-delay:.12s;}
-h1.hero-h .ln:nth-child(2) i{animation-delay:.24s;}
-h1.hero-h .ln:nth-child(3) i{animation-delay:.36s;}
-.hero-h em{font-style:italic;color:var(--sage-deep);}
-.hero-h .accent{color:var(--clay);}
-.hero-sub{font-size:18px;line-height:1.62;color:var(--ink-soft);max-width:440px;margin:28px 0 34px;opacity:0;animation:fade .8s .66s forwards;}
-.hero-cta{display:flex;gap:14px;align-items:center;opacity:0;animation:fade .8s .8s forwards;flex-wrap:wrap;}
-.btn-primary{display:inline-flex;align-items:center;gap:9px;background:var(--sage);color:var(--cream);padding:15px 28px;border-radius:100px;font-weight:600;font-size:15px;transition:transform .2s var(--e),box-shadow .25s;box-shadow:0 6px 20px rgba(79,100,70,.22);will-change:transform;}
-.btn-primary:hover{box-shadow:0 12px 30px rgba(79,100,70,.34);}
-.btn-primary svg{transition:transform .25s var(--e);}
-.btn-primary:hover svg{transform:translateX(4px);}
-.btn-ghost{display:inline-flex;align-items:center;gap:10px;padding:15px 24px;border-radius:100px;font-weight:500;font-size:15px;color:var(--ink);border:1.5px solid var(--line);transition:.2s;}
-.btn-ghost:hover{border-color:var(--sage);color:var(--sage-deep);}
-.btn-ghost .play{width:22px;height:22px;}
-
-/* interactive constellation hero art */
-.hero-art{position:relative;height:480px;opacity:0;animation:fade 1s .4s forwards;}
-#constellation{width:100%;height:100%;overflow:visible;}
-.c-core{transform-origin:center;}
-.c-node{cursor:pointer;transition:transform .3s var(--e);transform-box:fill-box;transform-origin:center;}
-.c-node:hover{transform:scale(1.18);}
-.c-link{stroke:var(--sage);stroke-width:1;opacity:0;transition:opacity .4s;}
-.c-ring{fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:3 6;}
-
-@keyframes rise{to{transform:translateY(0);}}
-@keyframes fade{to{opacity:1;}}
-@keyframes pulse-core{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
-
-/* ---------- MARQUEE ---------- */
-.strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;margin-top:36px;overflow:hidden;background:color-mix(in srgb,var(--cream) 40%,transparent);}
-.marq{display:flex;gap:0;white-space:nowrap;animation:marq 28s linear infinite;font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);}
-.marq span{display:flex;align-items:center;padding-right:56px;gap:12px;}
-.marq b{color:var(--sage-deep);font-weight:400;}
-.marq .dot{width:5px;height:5px;border-radius:50%;background:var(--clay);opacity:.6;}
-@keyframes marq{to{transform:translateX(-50%);}}
-
-/* ---------- SECTION ---------- */
-section{padding:104px 0;position:relative;}
-h2{font-family:var(--serif);font-weight:500;font-size:clamp(32px,4.4vw,50px);line-height:1.06;letter-spacing:-.022em;max-width:660px;}
-h2 em{font-style:italic;color:var(--sage-deep);}
-.lead{font-size:17px;color:var(--ink-soft);line-height:1.65;max-width:560px;margin-top:20px;}
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .75s var(--e),transform .75s var(--e);}
-.reveal.in{opacity:1;transform:none;}
-
-/* section-number instead of eyebrow */
-.h2-wrap{display:flex;align-items:flex-start;gap:22px;}
-.h2-num{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--clay);margin-top:10px;flex-shrink:0;position:relative;}
-.h2-num::after{content:'';display:block;width:30px;height:1px;background:var(--clay);margin-top:12px;opacity:.5;}
-
-/* pillars */
-.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px;}
-.pillar{background:var(--cream);border:1px solid var(--line);border-radius:22px;padding:32px;position:relative;overflow:hidden;transition:transform .35s var(--e),box-shadow .35s,border-color .35s;}
-.pillar::before{content:'';position:absolute;inset:0;background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),var(--sage-glow),transparent 45%);opacity:0;transition:opacity .4s;pointer-events:none;}
-.pillar:hover::before{opacity:.12;}
-.pillar:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(36,42,32,.12);border-color:var(--sage-glow);}
-.pillar .p-ic{width:58px;height:58px;border-radius:17px;background:var(--bg2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;transition:background .35s;position:relative;}
-.pillar:hover .p-ic{background:var(--sage);}
-.pillar .p-ic svg{width:30px;height:30px;transition:.35s;}
-.pillar:hover .p-ic svg [stroke]{stroke:var(--cream);}
-.pillar:hover .p-ic svg [fill]:not([fill="none"]){fill:var(--cream);}
-.pillar h3{font-family:var(--serif);font-size:23px;font-weight:600;margin-bottom:11px;position:relative;}
-.pillar p{font-size:14.5px;color:var(--ink-soft);line-height:1.62;position:relative;}
-.pillar .p-num{position:absolute;top:28px;right:30px;font-family:var(--mono);font-size:13px;color:var(--ink-mute);}
-
-/* flow */
-.flow{margin-top:58px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;}
-.step{background:var(--cream);border:1px solid var(--line);border-radius:20px;padding:28px 24px;position:relative;transition:transform .3s var(--e),box-shadow .3s;}
-.step:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(36,42,32,.1);}
-.step .s-n{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--clay);margin-bottom:18px;}
-.step .s-ic{width:46px;height:46px;margin-bottom:18px;}
-.step h4{font-family:var(--serif);font-size:19px;font-weight:600;margin-bottom:9px;}
-.step p{font-size:13.5px;color:var(--ink-soft);line-height:1.55;}
-.step .connector{position:absolute;top:44px;right:-16px;width:16px;z-index:2;color:var(--sage-glow);}
-.step:last-child .connector{display:none;}
-
-/* stats band */
-.band{background:var(--sage-deep);border-radius:36px;padding:70px 52px;position:relative;overflow:hidden;color:var(--cream);}
-.band-orb{position:absolute;right:-60px;bottom:-90px;width:360px;height:360px;opacity:.5;}
-.band .b-head{font-family:var(--serif);font-size:clamp(28px,3.6vw,42px);font-weight:500;line-height:1.12;max-width:660px;position:relative;}
-.band .b-head em{font-style:italic;color:var(--sage-glow);}
-.band-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:52px;position:relative;}
-.b-stat .b-v{font-family:var(--serif);font-size:clamp(40px,5vw,58px);font-weight:600;line-height:1;}
-.b-stat .b-v .u{color:var(--sage-glow);}
-.b-stat .b-l{font-size:13.5px;color:color-mix(in srgb,var(--cream) 72%,transparent);margin-top:10px;}
-
-/* final cta */
-.cta-final{text-align:center;padding:120px 0 110px;}
-.cta-final h2{margin:0 auto;}
-.cta-final .lead{margin:20px auto 38px;}
-.cta-final .btn-primary{margin:0 auto;}
-.cta-star{width:34px;height:34px;margin:0 auto 26px;display:block;color:var(--clay);animation:twinkle 3s ease-in-out infinite;}
-@keyframes twinkle{0%,100%{opacity:.5;transform:scale(.9) rotate(0);}50%{opacity:1;transform:scale(1.1) rotate(20deg);}}
-
-/* footer */
-footer{border-top:1px solid var(--line);padding:60px 0 40px;}
-.foot-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;}
-.foot-brand{max-width:300px;}
-.foot-brand .brand{margin-bottom:16px;}
-.foot-brand p{font-size:14px;color:var(--ink-soft);line-height:1.6;}
-.foot-cols{display:flex;gap:64px;flex-wrap:wrap;}
-.foot-col h5{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:15px;}
-.foot-col a{display:block;font-size:14px;color:var(--ink-soft);margin-bottom:10px;transition:color .2s,transform .2s;}
-.foot-col a:hover{color:var(--sage-deep);transform:translateX(3px);}
-.foot-base{margin-top:48px;padding-top:26px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:13px;color:var(--ink-mute);flex-wrap:wrap;gap:10px;}
-.foot-base em{font-style:italic;font-family:var(--serif);}
-
-@media(max-width:900px){
-  .hero-grid{grid-template-columns:1fr;}.hero-art{height:380px;order:-1;}
-  .pillars,.flow,.band-stats{grid-template-columns:1fr 1fr;}
-  .nav-links a:not(.login-btn){display:none;}
-  .step .connector{display:none;}
-}
-@media(max-width:560px){.pillars,.flow,.band-stats{grid-template-columns:1fr;}.wrap{padding:0 20px;}.h2-wrap{flex-direction:column;gap:10px;}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}h1.hero-h .ln i{transform:none;}.reveal{opacity:1;transform:none;}.aurora-bg{display:none;}}
+  .ln { display:block; overflow:hidden; padding-bottom:2px; }
+  .ln i { display:inline-block; font-style:normal; transform:translateY(112%); animation: ln-rise .95s cubic-bezier(.6,.05,.15,1) forwards; }
+  .fade0 { opacity:0; animation: soft-in .8s .6s forwards; }
+  .fade1 { opacity:0; animation: soft-in .8s .78s forwards; }
+  .heroart { opacity:0; animation: soft-in 1s .4s forwards; }
+  .reveal { opacity:0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.6,.05,.15,1), transform .7s cubic-bezier(.6,.05,.15,1); }
+  .reveal.in { opacity:1; transform:none; }
+  .vein { stroke-dasharray: 200; stroke-dashoffset: 200; animation: draw 1.4s 1s cubic-bezier(.6,.05,.15,1) forwards; }
+  .navbar { transition: border-color .3s, background .3s; border-bottom:1px solid transparent; }
+  .navbar.scrolled { border-color: var(--border); background: color-mix(in srgb, var(--bg) 82%, transparent); }
+  @media (prefers-reduced-motion: reduce) {
+    .ln i { transform:none; } .fade0,.fade1,.heroart { opacity:1; } .reveal { opacity:1; transform:none; } .vein { stroke-dashoffset:0; }
+  }
 </style>
 </head>
-<body>
 
-<div class="aurora-bg"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<body class="overflow-x-hidden">
+
+<!-- ambient botanical light -->
+<div class="fixed inset-0 -z-[1] pointer-events-none overflow-hidden" aria-hidden="true">
+  <span class="absolute -top-40 -left-24 w-[42rem] h-[42rem] rounded-full blur-[80px] opacity-25 animate-drift" style="background:var(--accent);mix-blend-mode:multiply;"></span>
+  <span class="absolute -top-24 right-[-8rem] w-[34rem] h-[34rem] rounded-full blur-[80px] opacity-20 animate-floaty" style="background:var(--clay);mix-blend-mode:multiply;"></span>
+</div>
 
 <!-- NAV -->
-<nav id="nav">
-  <div class="nav-in">
-    <a href="/" class="brand">
-      <span class="mark">
-        <svg viewBox="0 0 40 40" fill="none">
-          <circle cx="20" cy="20" r="17" stroke="var(--sage)" stroke-width="1.5" stroke-dasharray="2 5" opacity=".5">
+<nav id="nav" class="navbar sticky top-0 z-[60] backdrop-blur-md">
+  <div class="max-w-[1200px] mx-auto px-8 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 font-serif font-semibold text-[23px] tracking-[-.015em] no-underline text-ink">
+      <span class="w-9 h-9 shrink-0">
+        <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+          <circle cx="20" cy="20" r="17" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="2 5" opacity=".5">
             <animateTransform attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="40s" repeatCount="indefinite"/>
           </circle>
-          <path d="M20 8C15 12 12.5 15.5 12.5 20a7.5 7.5 0 0 0 15 0C27.5 15.5 25 12 20 8Z" fill="var(--sage)">
-            <animate attributeName="opacity" values=".82;1;.82" dur="4s" repeatCount="indefinite"/>
-          </path>
-          <path d="M20 27V17" stroke="var(--cream)" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M20 8C15 12 12.5 15.5 12.5 20a7.5 7.5 0 0 0 15 0C27.5 15.5 25 12 20 8Z" fill="var(--accent)"/>
+          <path d="M20 27V17" stroke="var(--surface-1)" stroke-width="1.7" stroke-linecap="round"/>
           <circle cx="20" cy="4" r="1.6" fill="var(--clay)"/>
         </svg>
       </span>
       <?= esc($brand) ?>
     </a>
-    <div class="nav-links">
-      <a href="#platform">Platform</a>
-      <a href="#how">How it works</a>
-      <a href="#story">Why <?= esc($brand) ?></a>
-      <a href="<?= site_url('login') ?>" class="login-btn">
+    <div class="flex items-center gap-8">
+      <a href="#platform" class="hidden md:inline text-[14.5px] text-ink-soft hover:text-ink transition">Platform</a>
+      <a href="#how" class="hidden md:inline text-[14.5px] text-ink-soft hover:text-ink transition">How it works</a>
+      <a href="#story" class="hidden md:inline text-[14.5px] text-ink-soft hover:text-ink transition">Why <?= esc($brand) ?></a>
+      <a href="<?= site_url('login') ?>" class="group inline-flex items-center gap-2 bg-ink text-paper px-5 py-2.5 rounded-pill font-medium text-[14px] no-underline transition hover:-translate-y-0.5 hover:bg-sage-deep" style="color:var(--bg);">
         Log in
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="transition-transform group-hover:translate-x-1"><?= icon('arrow-right', '', 16) ?></span>
       </a>
     </div>
   </div>
 </nav>
 
 <!-- HERO -->
-<header class="hero">
-  <div class="wrap hero-grid">
+<header class="relative pt-16 pb-10">
+  <div class="wrap grid lg:grid-cols-[1.02fr_.98fr] gap-12 items-center">
     <div>
-      <h1 class="hero-h">
+      <p class="fade0 eyebrow text-clay mb-6">People-first HR system</p>
+      <h1 class="font-serif font-medium tracking-[-.028em] leading-[1.0] text-[clamp(44px,6.2vw,78px)]">
         <span class="ln"><i>HR that moves</i></span>
-        <span class="ln"><i>as <em>one</em>,</i></span>
-        <span class="ln"><i>not one <span class="accent">chore</span>.</i></span>
+        <span class="ln" style="animation-delay:.12s"><i>as <em class="italic text-sage-deep">one</em>,</i></span>
+        <span class="ln"><i>not one <span class="text-clay">chore</span>.</i></span>
       </h1>
-      <p class="hero-sub"><?= esc($brand) ?> brings your companies, branches, people, and payroll into one calm workspace built for teams who'd rather grow than chase paperwork.</p>
-      <div class="hero-cta">
-        <a href="<?= site_url('login') ?>" class="btn-primary" data-magnetic>
+      <p class="fade0 text-[18px] leading-[1.62] text-ink-soft max-w-[440px] mt-7 mb-8">
+        <?= esc($brand) ?> brings your companies, branches, people, and payroll into one calm workspace built for teams who'd rather grow than chase paperwork.
+      </p>
+      <div class="fade1 flex flex-wrap items-center gap-3.5">
+        <a href="<?= site_url('login') ?>" class="group inline-flex items-center gap-2.5 bg-sage text-white px-7 py-4 rounded-pill font-semibold text-[15px] no-underline transition-transform hover:-translate-y-0.5"
+           style="box-shadow:0 8px 24px -6px rgba(79,100,70,.5);">
           Enter workspace
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="transition-transform group-hover:translate-x-1"><?= icon('arrow-right', '', 18) ?></span>
         </a>
-        <a href="#platform" class="btn-ghost">
-          <span class="play"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M10 8.5l5 3.5-5 3.5V8.5Z" fill="currentColor"/></svg></span>
-          See the platform
+        <a href="#platform" class="inline-flex items-center gap-2.5 px-6 py-4 rounded-pill font-medium text-[15px] text-ink border-[1.5px] border-line transition hover:border-sage hover:text-sage-deep no-underline">
+          <?= icon('play', '', 22) ?> See the platform
         </a>
       </div>
     </div>
 
-    <!-- INTERACTIVE CONSTELLATION -->
-    <div class="hero-art" id="heroArt">
-      <svg id="constellation" viewBox="0 0 480 480" fill="none">
-        <circle class="c-ring" cx="240" cy="240" r="80"/>
-        <circle class="c-ring" cx="240" cy="240" r="150"/>
-        <circle class="c-ring" cx="240" cy="240" r="215"/>
-        <g id="links"></g>
-        <g class="c-core" id="core">
-          <rect x="182" y="182" width="116" height="116" rx="32" fill="url(#coreGrad)"/>
-          <path d="M240 208c-9 7-13 12-13 19a13 13 0 0 0 26 0c0-7-4-12-13-19Z" fill="var(--cream)" opacity=".96"/>
-          <path d="M240 255v-22" stroke="var(--cream)" stroke-width="2.4" stroke-linecap="round"/>
-          <circle cx="240" cy="176" r="2.4" fill="var(--gold)"/>
-        </g>
-        <defs>
-          <linearGradient id="coreGrad" x1="182" y1="182" x2="298" y2="298" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#7d9670"/><stop offset="1" stop-color="#4f6446"/>
-          </linearGradient>
-        </defs>
-        <g id="nodes"></g>
-      </svg>
+    <!-- SIGNATURE: living org-tree product preview -->
+    <div class="heroart relative" id="heroArt">
+      <!-- floating chips -->
+      <div class="absolute -top-3 right-6 z-20 hidden sm:flex items-center gap-2.5 bg-surface border border-line rounded-2xl px-3.5 py-2.5 shadow-lift animate-floaty" style="animation-delay:.2s">
+        <span class="grid place-items-center w-8 h-8 rounded-[10px] bg-clay-soft text-clay"><?= icon('receipt', '', 17) ?></span>
+        <div><p class="text-[10.5px] uppercase tracking-eyebrow text-ink-mute">Payroll</p><p class="font-serif text-[15px] font-medium leading-none mt-0.5">On schedule</p></div>
+      </div>
+      <div class="absolute bottom-2 -left-2 z-20 hidden sm:flex items-center gap-2.5 bg-surface border border-line rounded-2xl px-3.5 py-2.5 shadow-lift animate-floaty" style="animation-delay:1.4s">
+        <span class="grid place-items-center w-8 h-8 rounded-[10px] bg-sage-soft text-sage-deep"><?= icon('clock', '', 17) ?></span>
+        <div><p class="text-[10.5px] uppercase tracking-eyebrow text-ink-mute">Attendance</p><p class="font-serif text-[15px] font-medium leading-none mt-0.5">Live today</p></div>
+      </div>
+
+      <!-- workspace card -->
+      <div class="relative bg-surface border border-line rounded-[26px] p-7 shadow-float overflow-hidden">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-2.5">
+            <span class="grid place-items-center w-8 h-8 rounded-[10px] bg-sage text-white"><?= icon('leaf', '', 18) ?></span>
+            <span class="font-serif font-semibold text-[16px]"><?= esc($brand) ?> workspace</span>
+          </div>
+          <span class="flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-line-strong"></span><span class="w-2.5 h-2.5 rounded-full bg-line-strong"></span><span class="w-2.5 h-2.5 rounded-full bg-sage"></span></span>
+        </div>
+
+        <!-- org tree that draws itself in -->
+        <svg viewBox="0 0 360 210" fill="none" class="w-full">
+          <!-- organic connective veins -->
+          <path class="vein" d="M180 40 C180 66 96 60 96 96" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
+          <path class="vein" d="M180 40 C180 66 264 60 264 96" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" style="animation-delay:1.1s"/>
+          <path class="vein" d="M96 120 C96 146 60 146 60 168" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" style="animation-delay:1.3s"/>
+          <path class="vein" d="M96 120 C96 146 132 146 132 168" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" style="animation-delay:1.4s"/>
+          <path class="vein" d="M264 120 C264 146 228 146 228 168" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" style="animation-delay:1.4s"/>
+          <path class="vein" d="M264 120 C264 146 300 146 300 168" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" style="animation-delay:1.5s"/>
+
+          <!-- root: company -->
+          <g><rect x="150" y="18" width="60" height="26" rx="9" fill="var(--accent)"/><text x="180" y="35" text-anchor="middle" fill="#fff" font-family="Bricolage Grotesque" font-size="11" font-weight="600">Company</text></g>
+          <!-- branches -->
+          <g><rect x="60" y="96" width="72" height="26" rx="9" fill="var(--surface-2)" stroke="var(--border)"/><text x="96" y="113" text-anchor="middle" fill="var(--text)" font-family="Bricolage Grotesque" font-size="11" font-weight="500">HQ</text></g>
+          <g><rect x="228" y="96" width="72" height="26" rx="9" fill="var(--surface-2)" stroke="var(--border)"/><text x="264" y="113" text-anchor="middle" fill="var(--text)" font-family="Bricolage Grotesque" font-size="11" font-weight="500">Branch</text></g>
+          <!-- people leaves -->
+          <?php $leaves = [[60,168],[132,168],[228,168],[300,168]]; foreach ($leaves as $i => $p): ?>
+          <g transform="translate(<?= $p[0] ?>,<?= $p[1] ?>)"><circle r="15" fill="var(--surface-1)" stroke="var(--border)"/><path d="M0 -6C-3 -3 -4.5 -1 -4.5 1.6A4.5 4.5 0 0 0 4.5 1.6C4.5 -1 3 -3 0 -6Z" fill="var(--clay)" opacity=".9"/></g>
+          <?php endforeach; ?>
+        </svg>
+
+        <div class="grid grid-cols-3 gap-3 mt-6">
+          <div class="rounded-ctl bg-paper border border-line px-3 py-2.5"><p class="text-[10.5px] uppercase tracking-eyebrow text-ink-mute">People</p><p class="font-serif text-[22px] font-medium leading-none mt-1">201<span class="text-clay text-[.6em]">+</span></p></div>
+          <div class="rounded-ctl bg-paper border border-line px-3 py-2.5"><p class="text-[10.5px] uppercase tracking-eyebrow text-ink-mute">Branches</p><p class="font-serif text-[22px] font-medium leading-none mt-1">4</p></div>
+          <div class="rounded-ctl bg-paper border border-line px-3 py-2.5"><p class="text-[10.5px] uppercase tracking-eyebrow text-ink-mute">Companies</p><p class="font-serif text-[22px] font-medium leading-none mt-1">1</p></div>
+        </div>
+      </div>
     </div>
   </div>
 </header>
 
 <!-- MARQUEE -->
-<div class="strip">
-  <div class="marq" id="marq"></div>
+<div class="border-y border-line py-5 mt-9 overflow-hidden" style="background:color-mix(in srgb,var(--surface-1) 40%,transparent);">
+  <div id="marq" class="flex whitespace-nowrap text-[13px] uppercase tracking-eyebrow text-ink-mute font-medium" style="animation:marq 30s linear infinite;"></div>
 </div>
 
 <!-- PLATFORM -->
-<section id="platform">
+<section id="platform" class="py-24">
   <div class="wrap">
-    <div class="reveal h2-wrap">
-      <span class="h2-num">01</span>
-      <div>
-        <h2>Everything your people need, <em>gathered in one place.</em></h2>
-        <p class="lead">No more scattered spreadsheets and lost employee files. <?= esc($brand) ?> keeps the whole organisation every company, branch, and person in one considered system.</p>
-      </div>
+    <div class="reveal max-w-[680px]">
+      <p class="eyebrow text-clay mb-4">The platform</p>
+      <h2 class="font-serif font-medium text-[clamp(32px,4.4vw,50px)] leading-[1.06] tracking-[-.022em]">Everything your people need, <em class="italic text-sage-deep">gathered in one place.</em></h2>
+      <p class="text-[17px] text-ink-soft leading-relaxed mt-5 max-w-[560px]">No more scattered spreadsheets and lost employee files. <?= esc($brand) ?> keeps the whole organisation — every company, branch, and person — in one considered system.</p>
     </div>
-    <div class="pillars">
-      <div class="pillar reveal" data-glow>
-        <span class="p-num">01</span>
-        <div class="p-ic"><svg viewBox="0 0 30 30" fill="none"><path d="M5 26V10l10-6 10 6v16" stroke="var(--sage-deep)" stroke-width="1.8" stroke-linejoin="round"/><rect x="11" y="17" width="8" height="9" stroke="var(--clay)" stroke-width="1.8"/><path d="M10 11h3M17 11h3" stroke="var(--sage-deep)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <h3>Company &amp; branches</h3>
-        <p>Register every company, map headquarters and branches, and hold all your registration details in one profile.</p>
+
+    <div class="grid md:grid-cols-3 gap-5 mt-14">
+      <?php
+      $pillars = [
+        ['icon' => 'building', 'h' => 'Company &amp; branches', 'p' => 'Register every company, map headquarters and branches, and hold all your registration details in one profile.'],
+        ['icon' => 'sitemap',  'h' => 'People &amp; org structure', 'p' => 'Departments, positions, and reporting lines that mirror how your teams truly sit — ready for the org chart.'],
+        ['icon' => 'receipt',  'h' => 'Payroll &amp; time', 'p' => 'Pay schedules, attendance, and leave that stay in step with each branch, so payday is never a scramble.'],
+      ];
+      foreach ($pillars as $p): ?>
+      <div class="reveal group relative overflow-hidden bg-surface border border-line rounded-[22px] p-8 transition hover:-translate-y-1.5 hover:border-sage hover:shadow-float" data-glow>
+        <span class="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-[.1] transition duration-500" style="background:radial-gradient(340px circle at var(--mx,50%) var(--my,0%),var(--accent),transparent 45%)"></span>
+        <span class="relative grid place-items-center w-14 h-14 rounded-[17px] bg-paper-tint text-sage-deep mb-6 transition group-hover:bg-sage group-hover:text-white"><?= icon($p['icon'], '', 28) ?></span>
+        <h3 class="relative font-serif text-[23px] font-semibold mb-2.5"><?= $p['h'] ?></h3>
+        <p class="relative text-[14.5px] text-ink-soft leading-[1.62]"><?= $p['p'] ?></p>
       </div>
-      <div class="pillar reveal" data-glow>
-        <span class="p-num">02</span>
-        <div class="p-ic"><svg viewBox="0 0 30 30" fill="none"><circle cx="11" cy="10" r="4" stroke="var(--sage-deep)" stroke-width="1.8"/><path d="M4 25c0-4 3-7 7-7s7 3 7 7" stroke="var(--sage-deep)" stroke-width="1.8" stroke-linecap="round"/><path d="M20 5a4 4 0 0 1 0 8M23 25c0-3-1.4-5.5-3.6-6.6" stroke="var(--clay)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <h3>People &amp; org structure</h3>
-        <p>Departments, positions, and reporting lines that mirror how your teams truly sit ready for the org chart.</p>
-      </div>
-      <div class="pillar reveal" data-glow>
-        <span class="p-num">03</span>
-        <div class="p-ic"><svg viewBox="0 0 30 30" fill="none"><rect x="4" y="7" width="22" height="16" rx="3" stroke="var(--sage-deep)" stroke-width="1.8"/><path d="M4 12h22" stroke="var(--sage-deep)" stroke-width="1.8"/><circle cx="9" cy="17.5" r="1.6" fill="var(--clay)"/><path d="M14 18h8" stroke="var(--clay)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <h3>Payroll &amp; time</h3>
-        <p>Pay schedules, attendance, and leave that stay in step with each branch so payday is never a scramble.</p>
-      </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
-<section id="how" style="background:color-mix(in srgb,var(--cream) 45%,transparent);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+<section id="how" class="py-24 border-y border-line" style="background:color-mix(in srgb,var(--surface-1) 45%,transparent);">
   <div class="wrap">
-    <div class="reveal h2-wrap">
-      <span class="h2-num">02</span>
-      <h2>From empty to <em>fully organised</em> in four moves.</h2>
+    <div class="reveal max-w-[640px]">
+      <p class="eyebrow text-clay mb-4">How it works</p>
+      <h2 class="font-serif font-medium text-[clamp(32px,4.4vw,50px)] leading-[1.06] tracking-[-.022em]">From empty to <em class="italic text-sage-deep">fully organised</em> in four moves.</h2>
     </div>
-    <div class="flow">
-      <div class="step reveal">
-        <svg class="connector" viewBox="0 0 16 24" fill="none"><path d="M2 12h12M9 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div class="s-n">i.</div>
-        <div class="s-ic"><svg viewBox="0 0 46 46" fill="none"><rect x="8" y="11" width="30" height="26" rx="4" stroke="var(--sage-deep)" stroke-width="2"/><path d="M23 18v12M17 24h12" stroke="var(--clay)" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <h4>Add your company</h4>
-        <p>Legal details, tax IDs, and statutory numbers the full company profile.</p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-14 relative">
+      <?php
+      $steps = [
+        ['n' => 'i',   'icon' => 'building',  'h' => 'Add your company', 'p' => 'Legal details, tax IDs, and statutory numbers — the full company profile.'],
+        ['n' => 'ii',  'icon' => 'branch',    'h' => 'Map the branches',  'p' => 'Set HQ, add every location, and ' . esc($brand) . ' keeps a single headquarters honest.'],
+        ['n' => 'iii', 'icon' => 'users',     'h' => 'Build the structure', 'p' => 'Departments and positions slot into place, ready for your people.'],
+        ['n' => 'iv',  'icon' => 'checklist', 'h' => 'Run the day-to-day', 'p' => 'Attendance, leave, and payroll move together — calm and on time.'],
+      ];
+      foreach ($steps as $i => $s): ?>
+      <div class="reveal relative bg-surface border border-line rounded-[20px] p-7 transition hover:-translate-y-1.5 hover:shadow-lift">
+        <?php if ($i < 3): ?><span class="hidden lg:block absolute top-9 -right-3 z-[2] text-sage"><?= icon('arrow-right', '', 18) ?></span><?php endif; ?>
+        <p class="font-serif italic text-[17px] text-clay mb-4"><?= $s['n'] ?>.</p>
+        <span class="grid place-items-center w-11 h-11 rounded-[13px] bg-sage-soft text-sage-deep mb-4"><?= icon($s['icon'], '', 22) ?></span>
+        <h4 class="font-serif text-[19px] font-semibold mb-2"><?= $s['h'] ?></h4>
+        <p class="text-[13.5px] text-ink-soft leading-[1.55]"><?= $s['p'] ?></p>
       </div>
-      <div class="step reveal">
-        <svg class="connector" viewBox="0 0 16 24" fill="none"><path d="M2 12h12M9 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div class="s-n">ii.</div>
-        <div class="s-ic"><svg viewBox="0 0 46 46" fill="none"><path d="M9 35V15l14-8 14 8v20" stroke="var(--sage-deep)" stroke-width="2" stroke-linejoin="round"/><rect x="18" y="24" width="10" height="11" stroke="var(--clay)" stroke-width="2"/></svg></div>
-        <h4>Map the branches</h4>
-        <p>Set HQ, add every location, and <?= esc($brand) ?> keeps a single headquarters honest.</p>
-      </div>
-      <div class="step reveal">
-        <svg class="connector" viewBox="0 0 16 24" fill="none"><path d="M2 12h12M9 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div class="s-n">iii.</div>
-        <div class="s-ic"><svg viewBox="0 0 46 46" fill="none"><circle cx="23" cy="15" r="6" stroke="var(--sage-deep)" stroke-width="2"/><path d="M13 37c0-6 4.5-10 10-10s10 4 10 10" stroke="var(--clay)" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <h4>Build the structure</h4>
-        <p>Departments and positions slot into place, ready for your people.</p>
-      </div>
-      <div class="step reveal">
-        <div class="s-n">iv.</div>
-        <div class="s-ic"><svg viewBox="0 0 46 46" fill="none"><circle cx="23" cy="23" r="15" stroke="var(--sage-deep)" stroke-width="2"/><path d="M16 23l5 5 10-10" stroke="var(--clay)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h4>Run the day-to-day</h4>
-        <p>Attendance, leave, and payroll move together calm and on time.</p>
-      </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
 
-<!-- STATS BAND -->
-<section id="story">
+<!-- STORY BAND -->
+<section id="story" class="py-24">
   <div class="wrap">
-    <div class="band reveal">
-      <svg class="band-orb" viewBox="0 0 360 360" fill="none">
-        <circle cx="180" cy="180" r="120" stroke="var(--sage-glow)" stroke-width="1" stroke-dasharray="2 6" opacity=".5"/>
-        <circle cx="180" cy="180" r="160" stroke="var(--sage-glow)" stroke-width="1" stroke-dasharray="2 6" opacity=".3"/>
-        <circle cx="300" cy="180" r="4" fill="var(--sage-glow)"/><circle cx="180" cy="60" r="3" fill="var(--gold)"/><circle cx="90" cy="240" r="3" fill="var(--sage-glow)"/>
+    <div class="reveal relative overflow-hidden rounded-[36px] px-8 py-16 sm:px-14 text-white" style="background:var(--accent-deep);">
+      <svg class="absolute -right-14 -bottom-20 w-[360px] opacity-50" viewBox="0 0 360 360" fill="none" aria-hidden="true">
+        <circle cx="180" cy="180" r="120" stroke="var(--accent)" stroke-width="1" stroke-dasharray="2 6" opacity=".6"/>
+        <circle cx="180" cy="180" r="160" stroke="var(--accent)" stroke-width="1" stroke-dasharray="2 6" opacity=".35"/>
+        <path d="M180 250c-22 16-32 30-32 48a32 32 0 0 0 64 0c0-18-10-32-32-48Z" fill="var(--accent)" opacity=".5"/>
+        <circle cx="300" cy="180" r="4" fill="var(--accent)"/><circle cx="180" cy="60" r="3" fill="var(--gold)"/>
       </svg>
-      <p class="b-head">Built by people who've <em>felt the Monday-morning payroll panic</em> and decided it didn't have to be that way.</p>
-      <div class="band-stats">
-        <div class="b-stat"><div class="b-v"><span data-target="1">0</span></div><div class="b-l">Workspace for every company you run</div></div>
-        <div class="b-stat"><div class="b-v"><span data-target="4">0</span></div><div class="b-l">Branches mapped in the current demo</div></div>
-        <div class="b-stat"><div class="b-v"><span data-target="201">0</span><span class="u">+</span></div><div class="b-l">Employee files, kept in order</div></div>
-        <div class="b-stat"><div class="b-v"><span data-target="1">0</span></div><div class="b-l">Calm, considered place for it all</div></div>
+      <p class="relative font-serif text-[clamp(28px,3.6vw,42px)] font-medium leading-[1.12] max-w-[680px]">
+        Built by people who've <em class="italic" style="color:var(--accent);">felt the Monday-morning payroll panic</em> and decided it didn't have to be that way.
+      </p>
+      <div class="relative grid grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
+        <?php
+        $band = [
+          ['t' => 1,   'u' => '',  'l' => 'Workspace for every company you run'],
+          ['t' => 4,   'u' => '',  'l' => 'Branches mapped in the current demo'],
+          ['t' => 201, 'u' => '+', 'l' => 'Employee files, kept in order'],
+          ['t' => 1,   'u' => '',  'l' => 'Calm, considered place for it all'],
+        ];
+        foreach ($band as $b): ?>
+        <div>
+          <div class="font-serif text-[clamp(40px,5vw,58px)] font-semibold leading-none"><span data-target="<?= $b['t'] ?>">0</span><span style="color:var(--accent);"><?= $b['u'] ?></span></div>
+          <p class="text-[13.5px] mt-2.5" style="color:color-mix(in srgb,#fff 72%,transparent);"><?= $b['l'] ?></p>
+        </div>
+        <?php endforeach; ?>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FINAL CTA -->
-<section class="cta-final">
+<section class="text-center pt-8 pb-28">
   <div class="wrap reveal">
-    <svg class="cta-star" viewBox="0 0 34 34" fill="none"><path d="M17 2l3 11 11 3-11 3-3 11-3-11-11-3 11-3 3-11Z" fill="currentColor"/></svg>
-    <h2 style="text-align:center;">Gather your team.<br><em>Rise with <?= esc($brand) ?>.</em></h2>
-    <p class="lead" style="text-align:center;">Sign in to the workspace and watch your whole organisation come together.</p>
-    <a href="<?= site_url('login') ?>" class="btn-primary" data-magnetic>
-      Enter workspace
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="w-9 h-9 mx-auto mb-6 text-clay" style="animation:twinkle 3s ease-in-out infinite" viewBox="0 0 34 34" fill="none"><path d="M17 2l3 11 11 3-11 3-3 11-3-11-11-3 11-3 3-11Z" fill="currentColor"/></svg>
+    <h2 class="font-serif font-medium text-[clamp(32px,4.4vw,50px)] leading-[1.06] tracking-[-.022em]">Gather your team.<br><em class="italic text-sage-deep">Rise with <?= esc($brand) ?>.</em></h2>
+    <p class="text-[17px] text-ink-soft leading-relaxed max-w-[520px] mx-auto mt-5 mb-9">Sign in to the workspace and watch your whole organisation come together.</p>
+    <a href="<?= site_url('login') ?>" class="group inline-flex items-center gap-2.5 bg-sage text-white px-7 py-4 rounded-pill font-semibold text-[15px] no-underline transition-transform hover:-translate-y-0.5" style="box-shadow:0 8px 24px -6px rgba(79,100,70,.5);">
+      Enter workspace <span class="transition-transform group-hover:translate-x-1"><?= icon('arrow-right', '', 18) ?></span>
     </a>
   </div>
 </section>
 
 <!-- FOOTER -->
-<footer>
+<footer class="border-t border-line py-14">
   <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <a href="/" class="brand">
-          <span class="mark"><svg viewBox="0 0 40 40" fill="none"><path d="M20 8C15 12 12.5 15.5 12.5 20a7.5 7.5 0 0 0 15 0C27.5 15.5 25 12 20 8Z" fill="var(--sage)"/><path d="M20 27V17" stroke="var(--sage-deep)" stroke-width="1.7" stroke-linecap="round"/><circle cx="20" cy="6" r="1.6" fill="var(--clay)"/></svg></span>
-          <?= esc($brand) ?>
+    <div class="flex flex-wrap justify-between items-start gap-10">
+      <div class="max-w-[300px]">
+        <a href="/" class="flex items-center gap-3 font-serif font-semibold text-[20px] no-underline text-ink mb-4">
+          <span class="w-8 h-8"><?= icon('leaf', 'text-sage', 30) ?></span><?= esc($brand) ?>
         </a>
-        <p>People-first HR, built for teams who'd rather grow than chase paperwork.</p>
+        <p class="text-[14px] text-ink-soft leading-relaxed">People-first HR, built for teams who'd rather grow than chase paperwork.</p>
       </div>
-      <div class="foot-cols">
-        <div class="foot-col"><h5>Platform</h5><a href="#platform">Company settings</a><a href="#platform">People &amp; org</a><a href="#platform">Payroll &amp; time</a><a href="#how">How it works</a></div>
-        <div class="foot-col"><h5>Workspace</h5><a href="<?= site_url('login') ?>">Log in</a><a href="#story">Why <?= esc($brand) ?></a></div>
+      <div class="flex flex-wrap gap-16">
+        <div>
+          <h5 class="eyebrow mb-4">Platform</h5>
+          <a href="#platform" class="block text-[14px] text-ink-soft mb-2.5 hover:text-sage-deep transition">Company settings</a>
+          <a href="#platform" class="block text-[14px] text-ink-soft mb-2.5 hover:text-sage-deep transition">People &amp; org</a>
+          <a href="#platform" class="block text-[14px] text-ink-soft mb-2.5 hover:text-sage-deep transition">Payroll &amp; time</a>
+          <a href="#how" class="block text-[14px] text-ink-soft mb-2.5 hover:text-sage-deep transition">How it works</a>
+        </div>
+        <div>
+          <h5 class="eyebrow mb-4">Workspace</h5>
+          <a href="<?= site_url('login') ?>" class="block text-[14px] text-ink-soft mb-2.5 hover:text-sage-deep transition">Log in</a>
+          <a href="#story" class="block text-[14px] text-ink-soft mb-2.5 hover:text-sage-deep transition">Why <?= esc($brand) ?></a>
+        </div>
       </div>
     </div>
-    <div class="foot-base">
+    <div class="mt-12 pt-6 border-t border-line flex flex-wrap justify-between gap-2.5 text-[13px] text-ink-mute">
       <span>© <?= date('Y') ?> <?= esc($brand) ?> · HR that moves as one</span>
-      <span style="font-family:var(--mono);"><?= esc(strtolower($brand)) ?> · <em>rise, together</em></span>
+      <span class="font-serif italic"><?= esc(strtolower($brand)) ?> · rise, together</span>
     </div>
   </div>
 </footer>
 
 <script>
-var nav=document.getElementById('nav');
-addEventListener('scroll',function(){nav.classList.toggle('scrolled',scrollY>12);});
+  // sticky nav border on scroll
+  var nav = document.getElementById('nav');
+  addEventListener('scroll', function () { nav.classList.toggle('scrolled', scrollY > 12); });
 
-// scroll reveal
-var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.14});
-document.querySelectorAll('.reveal').forEach(function(el,i){el.style.transitionDelay=(i%4*0.06)+'s';io.observe(el);});
+  // scroll reveal
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: .14 });
+  document.querySelectorAll('.reveal').forEach(function (el, i) { el.style.transitionDelay = (i % 4 * 0.06) + 's'; io.observe(el); });
 
-// marquee build (duplicated for seamless loop)
-(function(){
-  var items=['One workspace','All your companies','Branches & HQ mapped','Employee files in order','Departments structured','Payroll on schedule','Leave tracked','Org chart ready'];
-  var html='';for(var k=0;k<2;k++){items.forEach(function(t){html+='<span><b>'+t+'</b><span class="dot"></span></span>';});}
-  document.getElementById('marq').innerHTML=html;
-})();
-
-// count-up
-var band=document.querySelector('.band'),counted=false;
-if(band){new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!counted){counted=true;
-  document.querySelectorAll('.b-v span[data-target]').forEach(function(s){var t=+s.dataset.target,d=1500,st=performance.now();
-    (function tick(now){var p=Math.min((now-st)/d,1),ev=1-Math.pow(1-p,3);s.textContent=Math.round(t*ev);if(p<1)requestAnimationFrame(tick);})(performance.now());});
-}});},{threshold:.4}).observe(band);}
-
-// pillar cursor glow
-document.querySelectorAll('[data-glow]').forEach(function(p){
-  p.addEventListener('mousemove',function(e){var r=p.getBoundingClientRect();p.style.setProperty('--mx',(e.clientX-r.left)+'px');p.style.setProperty('--my',(e.clientY-r.top)+'px');});
-});
-
-// magnetic buttons
-document.querySelectorAll('[data-magnetic]').forEach(function(b){
-  b.addEventListener('mousemove',function(e){var r=b.getBoundingClientRect();var x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;b.style.transform='translate('+x*0.25+'px,'+y*0.35+'px)';});
-  b.addEventListener('mouseleave',function(){b.style.transform='';});
-});
-
-// INTERACTIVE CONSTELLATION
-(function(){
-  var svg=document.getElementById('constellation'),art=document.getElementById('heroArt');
-  var nodesG=document.getElementById('nodes'),linksG=document.getElementById('links'),core=document.getElementById('core');
-  var C=240;
-  var icons=[
-    {r:150,a:-90,ic:'<circle cx="0" cy="-4" r="4" stroke="var(--sage-deep)" stroke-width="1.7"/><path d="M-6 8c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="var(--sage-deep)" stroke-width="1.7" stroke-linecap="round"/><path d="M7 -8a3 3 0 0 1 0 6" stroke="var(--clay)" stroke-width="1.7" stroke-linecap="round"/>'},
-    {r:150,a:20,ic:'<path d="M-8 8V-3l8-5 8 5V8" stroke="var(--sage-deep)" stroke-width="1.7" stroke-linejoin="round"/><rect x="-3" y="1" width="6" height="7" stroke="var(--clay)" stroke-width="1.7"/>'},
-    {r:150,a:160,ic:'<rect x="-9" y="-6" width="18" height="12" rx="2" stroke="var(--sage-deep)" stroke-width="1.7"/><path d="M-9 -1h18" stroke="var(--sage-deep)" stroke-width="1.7"/><circle cx="-5" cy="3" r="1.3" fill="var(--clay)"/>'},
-    {r:215,a:65,ic:'<circle cx="0" cy="0" r="9" stroke="var(--sage-deep)" stroke-width="1.7"/><path d="M0 -5v5l3.5 2" stroke="var(--clay)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>'},
-    {r:215,a:115,ic:'<path d="M-4 -9v3M4 -9v3" stroke="var(--sage-deep)" stroke-width="1.7" stroke-linecap="round"/><rect x="-8.5" y="-6.5" width="17" height="15" rx="2.5" stroke="var(--sage-deep)" stroke-width="1.7"/><path d="M-3 2l2 2 4-4" stroke="var(--clay)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>'}
-  ];
-  var pts=[];
-  icons.forEach(function(o,i){
-    var rad=o.a*Math.PI/180,x=C+o.r*Math.cos(rad),y=C+o.r*Math.sin(rad);
-    pts.push({x:x,y:y});
-    var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
-    ln.setAttribute('x1',C);ln.setAttribute('y1',C);ln.setAttribute('x2',x);ln.setAttribute('y2',y);ln.setAttribute('class','c-link');ln.dataset.i=i;linksG.appendChild(ln);
-    var g=document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.setAttribute('class','c-node');g.setAttribute('transform','translate('+x+','+y+')');g.dataset.i=i;
-    g.innerHTML='<rect x="-22" y="-22" width="44" height="44" rx="14" fill="var(--cream)" stroke="var(--line)"/><g>'+o.ic+'</g>';
-    g.addEventListener('mouseenter',function(){linksG.querySelector('[data-i="'+i+'"]').style.opacity='.6';});
-    g.addEventListener('mouseleave',function(){linksG.querySelector('[data-i="'+i+'"]').style.opacity='0';});
-    nodesG.appendChild(g);
-  });
-  // gentle float per node + parallax
-  var t=0;
-  function loop(){t+=0.008;
-    nodesG.querySelectorAll('.c-node').forEach(function(g,i){
-      var p=pts[i],off=Math.sin(t+i*1.4)*4;
-      g.setAttribute('transform','translate('+p.x+','+(p.y+off)+')');
-      var ln=linksG.querySelector('[data-i="'+i+'"]');ln.setAttribute('y2',p.y+off);
+  // marquee (duplicated for a seamless loop)
+  (function () {
+    var items = ['One workspace','All your companies','Branches & HQ mapped','Employee files in order','Departments structured','Payroll on schedule','Leave tracked','Org chart ready'];
+    var html = '';
+    for (var k = 0; k < 2; k++) items.forEach(function (t) {
+      html += '<span class="inline-flex items-center pr-14"><span style="color:var(--accent-deep)">' + t + '</span><span class="ml-3 w-[5px] h-[5px] rounded-full" style="background:var(--clay);opacity:.6"></span></span>';
     });
-    core.style.transform='scale('+(1+Math.sin(t*1.3)*0.02)+')';core.style.transformOrigin='240px 240px';
-    requestAnimationFrame(loop);
+    document.getElementById('marq').innerHTML = html;
+  })();
+
+  // count-up in the story band
+  var band = document.querySelector('[data-target]') && document.querySelector('#story .reveal');
+  if (band) {
+    new IntersectionObserver(function (es, obs) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        document.querySelectorAll('span[data-target]').forEach(function (s) {
+          var t = +s.dataset.target, d = 1500, st = performance.now();
+          (function tick(now) { var p = Math.min((now - st) / d, 1), ev = 1 - Math.pow(1 - p, 3); s.textContent = Math.round(t * ev); if (p < 1) requestAnimationFrame(tick); })(performance.now());
+        });
+        obs.disconnect();
+      });
+    }, { threshold: .4 }).observe(band);
   }
-  loop();
-  // mouse parallax
-  addEventListener('mousemove',function(e){
-    if(innerWidth<900)return;var x=(e.clientX/innerWidth-.5),y=(e.clientY/innerHeight-.5);
-    art.style.transform='translate('+x*18+'px,'+y*18+'px)';
+
+  // feature-card cursor glow
+  document.querySelectorAll('[data-glow]').forEach(function (p) {
+    p.addEventListener('mousemove', function (e) { var r = p.getBoundingClientRect(); p.style.setProperty('--mx', (e.clientX - r.left) + 'px'); p.style.setProperty('--my', (e.clientY - r.top) + 'px'); });
   });
-})();
 </script>
 </body>
 </html>

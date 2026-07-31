@@ -56,7 +56,7 @@ $val    = static fn (string $key) => esc(old($key, $company[$key] ?? ''));
               <button type="submit" class="btn sm danger"
                       form="delete-logo-form"
                       onclick="return confirm('Remove the current logo?');">
-                <i class="ti ti-trash" aria-hidden="true"></i> Remove logo
+                <?= icon('trash') ?> Remove logo
               </button>
             </div>
           <?php endif; ?>

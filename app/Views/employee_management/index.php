@@ -14,7 +14,7 @@
       <a class="btn" href="<?= site_url('employee-ranks') ?>">Employee ranks</a>
     <?php endif; ?>
     <a class="btn" href="<?= site_url('employee-management/import') ?>">Bulk import</a>
-    <a class="btn primary" href="<?= site_url('employee-management/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add employee</a>
+    <a class="btn primary" href="<?= site_url('employee-management/new') ?>"><?= icon('plus') ?>Add employee</a>
   </div>
 </div>
 

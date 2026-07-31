@@ -7,8 +7,8 @@
     <p class="sub"><a href="<?= site_url('filings') ?>">&larr; Back to filings</a></p>
   </div>
   <div style="display:flex; gap:10px;">
-    <a class="btn" href="<?= site_url('leave-types/import') ?>"><i class="ti ti-upload" aria-hidden="true"></i>Import CSV</a>
-    <a class="btn primary" href="<?= site_url('leave-types/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add leave type</a>
+    <a class="btn" href="<?= site_url('leave-types/import') ?>"><?= icon('upload') ?>Import CSV</a>
+    <a class="btn primary" href="<?= site_url('leave-types/new') ?>"><?= icon('plus') ?>Add leave type</a>
   </div>
 </div>
 

@@ -7,7 +7,7 @@
     <p class="sub">Directory of everyone in <?= is_superadmin() ? 'the system' : 'your company' ?></p>
   </div>
   <?php if (can_access(\App\Constants\Modules::EMPLOYEE_MANAGEMENT)): ?>
-    <a class="btn primary" href="<?= site_url('employee-management/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add employee</a>
+    <a class="btn primary" href="<?= site_url('employee-management/new') ?>"><?= icon('plus') ?>Add employee</a>
   <?php endif; ?>
 </div>
 

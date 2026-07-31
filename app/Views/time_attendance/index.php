@@ -22,16 +22,16 @@ $statusBadge = static function (?string $status): string {
   </div>
   <div style="display:flex; gap:8px; flex-wrap:wrap;">
     <?php if (can_access_sub('time_attendance.schedules', \App\Constants\Modules::TIME_ATTENDANCE)): ?>
-      <a class="btn" href="<?= site_url('work-schedules') ?>"><i class="ti ti-calendar-time" aria-hidden="true"></i>Work schedules</a>
+      <a class="btn" href="<?= site_url('work-schedules') ?>"><?= icon('calendar-time') ?>Work schedules</a>
     <?php endif; ?>
     <?php if (can_access_sub('time_attendance.holidays', \App\Constants\Modules::TIME_ATTENDANCE)): ?>
-      <a class="btn" href="<?= site_url('holidays') ?>"><i class="ti ti-calendar-star" aria-hidden="true"></i>Holidays</a>
+      <a class="btn" href="<?= site_url('holidays') ?>"><?= icon('calendar-star') ?>Holidays</a>
     <?php endif; ?>
     <?php if (can_access_sub('time_attendance.cutoff', \App\Constants\Modules::TIME_ATTENDANCE)): ?>
-      <a class="btn" href="<?= site_url('cutoff-schedules') ?>"><i class="ti ti-calendar-cog" aria-hidden="true"></i>Cutoff schedules</a>
+      <a class="btn" href="<?= site_url('cutoff-schedules') ?>"><?= icon('calendar-cog') ?>Cutoff schedules</a>
     <?php endif; ?>
     <?php if (can_access_sub('time_attendance.policies', \App\Constants\Modules::TIME_ATTENDANCE)): ?>
-      <a class="btn" href="<?= site_url('attendance-policies') ?>"><i class="ti ti-shield-check" aria-hidden="true"></i>Policies</a>
+      <a class="btn" href="<?= site_url('attendance-policies') ?>"><?= icon('shield-check') ?>Policies</a>
     <?php endif; ?>
   </div>
 </div>
@@ -46,14 +46,14 @@ $statusBadge = static function (?string $status): string {
       <form method="post" action="<?= site_url('attendance/clock-in') ?>">
         <?= csrf_field() ?>
         <button type="submit" class="btn primary" <?= ! empty($todayLog['time_in']) ? 'disabled' : '' ?>>
-          <i class="ti ti-login-2" aria-hidden="true"></i>
+          <?= icon('login-2') ?>
           <?= ! empty($todayLog['time_in']) ? 'Clocked in at ' . esc(substr($todayLog['time_in'], 0, 5)) : 'Clock in' ?>
         </button>
       </form>
       <form method="post" action="<?= site_url('attendance/clock-out') ?>">
         <?= csrf_field() ?>
         <button type="submit" class="btn" <?= ! empty($todayLog['time_out']) ? 'disabled' : '' ?>>
-          <i class="ti ti-logout-2" aria-hidden="true"></i>
+          <?= icon('logout-2') ?>
           <?= ! empty($todayLog['time_out']) ? 'Clocked out at ' . esc(substr($todayLog['time_out'], 0, 5)) : 'Clock out' ?>
         </button>
       </form>

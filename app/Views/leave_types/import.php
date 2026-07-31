@@ -39,7 +39,7 @@
       </div>
     </div>
     <div class="form-actions">
-      <button type="submit" class="btn primary"><i class="ti ti-upload" aria-hidden="true"></i>Import</button>
+      <button type="submit" class="btn primary"><?= icon('upload') ?>Import</button>
       <a class="btn" href="<?= site_url('leave-types') ?>">Cancel</a>
     </div>
   </form>

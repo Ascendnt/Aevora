@@ -11,7 +11,7 @@
     </p>
   </div>
   <div style="display:flex; gap:10px; flex-wrap:wrap;">
-    <a class="btn" href="<?= site_url('payroll/runs/' . $run['id'] . '/export') ?>"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i>Export Excel</a>
+    <a class="btn" href="<?= site_url('payroll/runs/' . $run['id'] . '/export') ?>"><?= icon('file-spreadsheet') ?>Export Excel</a>
     <?php if ($isDraft): ?>
       <form method="post" action="<?= site_url('payroll/runs/' . $run['id'] . '/finalize') ?>"
             onsubmit="return confirm('Finalize this run? Payslips will be locked as historical records and loan/benefit balances will be deducted. This cannot be undone from the UI.');">

@@ -8,7 +8,7 @@
     <h1>Holiday calendar</h1>
     <p class="sub"><a href="<?= site_url('attendance') ?>">&larr; Back to time &amp; attendance</a></p>
   </div>
-  <a class="btn primary" href="<?= site_url('holidays/new' . ($filter ? '?company=' . $filter : '')) ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add holiday</a>
+  <a class="btn primary" href="<?= site_url('holidays/new' . ($filter ? '?company=' . $filter : '')) ?>"><?= icon('plus') ?>Add holiday</a>
 </div>
 
 <form method="get" action="<?= site_url('holidays') ?>" style="margin-bottom:1rem; display:flex; gap:14px; flex-wrap:wrap;">
@@ -51,7 +51,7 @@
         <label for="sync_country">Country code</label>
         <input type="text" id="sync_country" name="country_code" maxlength="2" style="width:80px; text-transform:uppercase;" placeholder="PH">
       </div>
-      <button type="submit" class="btn"><i class="ti ti-refresh" aria-hidden="true"></i>Sync holidays</button>
+      <button type="submit" class="btn"><?= icon('refresh') ?>Sync holidays</button>
       <p class="muted" style="margin:0; flex-basis:100%;">
         Pulls national public holidays from date.nager.at. Leave the country code blank to use the company's own country. Already-imported dates are skipped, so this is safe to re-run.
         Coverage varies by country &mdash; some countries return few or no holidays.
@@ -62,7 +62,7 @@
       <?= csrf_field() ?>
       <input type="hidden" name="company_id" value="<?= esc($filter) ?>">
       <input type="hidden" name="year" value="<?= esc($year) ?>">
-      <button type="submit" class="btn sm danger"><i class="ti ti-trash" aria-hidden="true"></i>Remove all API-synced holidays for <?= esc($year) ?></button>
+      <button type="submit" class="btn sm danger"><?= icon('trash') ?>Remove all API-synced holidays for <?= esc($year) ?></button>
       <span class="muted" style="margin-left:10px;">Use this if a sync accidentally pulled the wrong country &mdash; manual entries are untouched.</span>
     </form>
   </div>

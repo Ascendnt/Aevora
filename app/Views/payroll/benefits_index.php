@@ -8,7 +8,7 @@
   </div>
   <div style="display:flex; gap:10px;">
     <a class="btn" href="<?= site_url('payroll/import') ?>">Bulk import</a>
-    <a class="btn primary" href="<?= site_url('payroll/benefits/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add benefit</a>
+    <a class="btn primary" href="<?= site_url('payroll/benefits/new') ?>"><?= icon('plus') ?>Add benefit</a>
   </div>
 </div>
 

@@ -6,7 +6,7 @@
     <h1>Access profiles</h1>
     <p class="sub">Named roles you can assign to employees (e.g. "HR", "Employee")</p>
   </div>
-  <a class="btn primary" href="<?= site_url('access-profiles/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add profile</a>
+  <a class="btn primary" href="<?= site_url('access-profiles/new') ?>"><?= icon('plus') ?>Add profile</a>
 </div>
 
 <?php if (empty($profiles)): ?>

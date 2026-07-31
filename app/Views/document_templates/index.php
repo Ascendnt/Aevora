@@ -6,7 +6,7 @@
     <h1>Document templates</h1>
     <p class="sub">Token-based boilerplate used to generate employee documents — <code>{{token}}</code> placeholders get filled in with real employee data</p>
   </div>
-  <a class="btn primary" href="<?= site_url('document-templates/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add template</a>
+  <a class="btn primary" href="<?= site_url('document-templates/new') ?>"><?= icon('plus') ?>Add template</a>
 </div>
 
 <?php if (empty($grouped)): ?>

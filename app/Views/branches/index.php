@@ -6,7 +6,7 @@
     <h1>Branches</h1>
     <p class="sub"><a href="<?= site_url('companies') ?>">&larr; Back to company settings</a></p>
   </div>
-  <a class="btn primary" href="<?= site_url('branches/new' . ($filter ? '?company=' . $filter : '')) ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add branch</a>
+  <a class="btn primary" href="<?= site_url('branches/new' . ($filter ? '?company=' . $filter : '')) ?>"><?= icon('plus') ?>Add branch</a>
 </div>
 
 <form method="get" action="<?= site_url('branches') ?>" style="margin-bottom:1rem; max-width:320px;">

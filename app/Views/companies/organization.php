@@ -15,7 +15,7 @@
 
 <div class="page-head">
   <p class="section-label" style="margin:0;">Branches / Locations</p>
-  <a class="btn sm primary" href="<?= site_url('branches/new?company=' . $company['id']) ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add branch</a>
+  <a class="btn sm primary" href="<?= site_url('branches/new?company=' . $company['id']) ?>"><?= icon('plus') ?>Add branch</a>
 </div>
 <?php if (empty($branches)): ?>
   <div class="empty">No branches yet for this company.</div>

@@ -6,7 +6,7 @@
     <h1>Work schedules</h1>
     <p class="sub"><a href="<?= site_url('attendance') ?>">&larr; Back to time &amp; attendance</a></p>
   </div>
-  <a class="btn primary" href="<?= site_url('work-schedules/new' . ($filter ? '?company=' . $filter : '')) ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add schedule</a>
+  <a class="btn primary" href="<?= site_url('work-schedules/new' . ($filter ? '?company=' . $filter : '')) ?>"><?= icon('plus') ?>Add schedule</a>
 </div>
 
 <?php if (count($companies) > 1): ?>

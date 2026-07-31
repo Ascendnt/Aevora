@@ -11,7 +11,7 @@
     <a class="btn" href="<?= site_url('payroll/loans') ?>">Loans</a>
     <a class="btn" href="<?= site_url('payroll/import') ?>">Bulk import</a>
     <a class="btn" href="<?= site_url('payroll/runs') ?>">All runs</a>
-    <a class="btn primary" href="<?= site_url('payroll/runs/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>New run</a>
+    <a class="btn primary" href="<?= site_url('payroll/runs/new') ?>"><?= icon('plus') ?>New run</a>
   </div>
 </div>
 

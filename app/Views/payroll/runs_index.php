@@ -6,7 +6,7 @@
     <h1>Payroll runs</h1>
     <p class="sub"><a href="<?= site_url('payroll') ?>">&larr; Back to payroll dashboard</a></p>
   </div>
-  <a class="btn primary" href="<?= site_url('payroll/runs/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>New run</a>
+  <a class="btn primary" href="<?= site_url('payroll/runs/new') ?>"><?= icon('plus') ?>New run</a>
 </div>
 
 <?php if (empty($runs)): ?>

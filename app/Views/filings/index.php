@@ -39,10 +39,10 @@ $fmtDates = static function (array $dates): string {
   </div>
   <div style="display:flex; gap:10px;">
     <?php if (can_access_sub('filings.leave_types', \App\Constants\Modules::FILINGS)): ?>
-      <a class="btn" href="<?= site_url('leave-types') ?>"><i class="ti ti-settings" aria-hidden="true"></i>Leave types</a>
+      <a class="btn" href="<?= site_url('leave-types') ?>"><?= icon('settings') ?>Leave types</a>
     <?php endif; ?>
-    <a class="btn" href="<?= site_url('filings/my-approvals') ?>"><i class="ti ti-checklist" aria-hidden="true"></i>My approvals</a>
-    <a class="btn primary" href="<?= site_url('filings/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>New filing</a>
+    <a class="btn" href="<?= site_url('filings/my-approvals') ?>"><?= icon('checklist') ?>My approvals</a>
+    <a class="btn primary" href="<?= site_url('filings/new') ?>"><?= icon('plus') ?>New filing</a>
   </div>
 </div>
 

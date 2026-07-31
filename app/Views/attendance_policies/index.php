@@ -6,7 +6,7 @@
     <h1>Attendance policies</h1>
     <p class="sub"><a href="<?= site_url('attendance') ?>">&larr; Back to time &amp; attendance</a></p>
   </div>
-  <a class="btn primary" href="<?= site_url('attendance-policies/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add policy</a>
+  <a class="btn primary" href="<?= site_url('attendance-policies/new') ?>"><?= icon('plus') ?>Add policy</a>
 </div>
 
 <?php if (empty($policies)): ?>

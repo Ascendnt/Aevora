@@ -14,7 +14,7 @@ $isMinWage = db_bool(old('is_minimum_wage_earner', $employee['is_minimum_wage_ea
     <p class="sub"><a href="<?= site_url('employee-management') ?>">&larr; Back to employee management</a></p>
   </div>
   <?php if ($isEdit && can_access(\App\Constants\Modules::DOCUMENTS)): ?>
-    <a class="btn" href="<?= site_url('employee-management/' . $employee['id'] . '/documents') ?>"><i class="ti ti-files" aria-hidden="true"></i>Documents</a>
+    <a class="btn" href="<?= site_url('employee-management/' . $employee['id'] . '/documents') ?>"><?= icon('files') ?>Documents</a>
   <?php endif; ?>
 </div>
 

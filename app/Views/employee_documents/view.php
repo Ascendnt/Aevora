@@ -16,9 +16,9 @@
   </div>
   <div style="display:flex; gap:10px;">
     <?php if (empty($document['file_path'])): ?>
-      <a class="btn" href="<?= site_url('documents/' . $document['id'] . '/pdf') ?>"><i class="ti ti-file-type-pdf" aria-hidden="true"></i>Download PDF</a>
+      <a class="btn" href="<?= site_url('documents/' . $document['id'] . '/pdf') ?>"><?= icon('file-type-pdf') ?>Download PDF</a>
     <?php endif; ?>
-    <button type="button" class="btn primary" onclick="window.print()"><i class="ti ti-printer" aria-hidden="true"></i>Print / Save as PDF</button>
+    <button type="button" class="btn primary" onclick="window.print()"><?= icon('printer') ?>Print / Save as PDF</button>
   </div>
 </div>
 

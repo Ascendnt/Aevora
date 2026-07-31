@@ -14,7 +14,7 @@ $freqLabel = static fn (string $f) => match ($f) {
     <h1>Cutoff schedules</h1>
     <p class="sub"><a href="<?= site_url('attendance') ?>">&larr; Back to time &amp; attendance</a></p>
   </div>
-  <a class="btn primary" href="<?= site_url('cutoff-schedules/new' . ($filter ? '?company=' . $filter : '')) ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add cutoff schedule</a>
+  <a class="btn primary" href="<?= site_url('cutoff-schedules/new' . ($filter ? '?company=' . $filter : '')) ?>"><?= icon('plus') ?>Add cutoff schedule</a>
 </div>
 
 <?php if (count($companies) > 1): ?>

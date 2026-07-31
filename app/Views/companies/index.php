@@ -7,9 +7,9 @@
     <p class="sub">Manage companies and their branches</p>
   </div>
   <div style="display:flex; gap:8px;">
-    <a class="btn" href="<?= site_url('branches') ?>"><i class="ti ti-map-pin" aria-hidden="true"></i>All branches</a>
+    <a class="btn" href="<?= site_url('branches') ?>"><?= icon('map-pin') ?>All branches</a>
     <?php if (is_superadmin()): ?>
-      <a class="btn primary" href="<?= site_url('companies/new') ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add company</a>
+      <a class="btn primary" href="<?= site_url('companies/new') ?>"><?= icon('plus') ?>Add company</a>
     <?php endif; ?>
   </div>
 </div>

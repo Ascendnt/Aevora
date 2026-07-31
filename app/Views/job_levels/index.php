@@ -6,7 +6,7 @@
     <h1>Job levels</h1>
     <p class="sub"><a href="<?= site_url('employee-management') ?>">&larr; Back to employee management</a></p>
   </div>
-  <a class="btn primary" href="<?= site_url('job-levels/new' . ($filter ? '?company=' . $filter : '')) ?>"><i class="ti ti-plus" aria-hidden="true"></i>Add job level</a>
+  <a class="btn primary" href="<?= site_url('job-levels/new' . ($filter ? '?company=' . $filter : '')) ?>"><?= icon('plus') ?>Add job level</a>
 </div>
 
 <?php if (count($companies) > 1): ?>
